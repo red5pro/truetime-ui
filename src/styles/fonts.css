@@ -1,0 +1,31 @@
+/*
+ * Clash Display by Indian Type Foundry (https://www.fontshare.com/fonts/clash-display).
+ * The family name matches the TrueTime theme's `fontFamily.display` token.
+ */
+@font-face {
+  font-family: 'ClashDisplay';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/ClashDisplay-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../assets/fonts/ClashDisplay-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../assets/fonts/ClashDisplay-Semibold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/ClashDisplay-Bold.woff2') format('woff2');
+}
