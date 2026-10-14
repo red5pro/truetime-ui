@@ -13,12 +13,15 @@ plain ESM built by `tsc`, with `.d.ts` files. Fonts and images ship as files tha
 
 ```jsonc
 // package.json
-"dependencies": { "truetime-ui": "file:../truetime-ui" }
+"dependencies": { "truetime-ui": "github:red5pro/truetime-ui" },
+// npm 11.x blocks dependency install scripts unless approved; `prepare` builds dist/ on install
+"allowScripts": { "truetime-ui": true }
 ```
 
 ```ini
-# .npmrc — install a packed copy instead of a symlink, so react/@mui/@emotion resolve to the app's
-# single copy (a symlink would pull in this repo's dev copies and break hooks/theme context).
+# .npmrc — when installing a local checkout (`npm run ui:sync`), use a packed copy instead of a
+# symlink, so react/@mui/@emotion resolve to the app's single copy (a symlink would pull in this
+# repo's dev copies and break hooks/theme context).
 install-links=true
 ```
 
@@ -87,8 +90,10 @@ npm test             # vitest
 npm run typecheck && npm run lint
 ```
 
-The apps hold an installed copy, so after rebuilding run `npm run ui:sync` in each app. It
-reinstalls the copy and clears Vite's pre-bundle cache; then restart the dev server.
+Apps install the library from GitHub, so a change reaches them once it's pushed and they run
+`npm update truetime-ui`. To try a change before pushing, run `npm run ui:sync` in the app: it
+installs this checkout (without saving) and clears Vite's pre-bundle cache; then restart the dev
+server. A plain `npm install` in the app goes back to the GitHub version.
 
 ### Adding a token
 

@@ -8,7 +8,8 @@ It is consumed by sibling checkouts:
 - `../truetime-studio-web`
 - `../red5-truetime-meetings`
 
-Both install it from `file:../truetime-ui` as a packed copy (`install-links=true` in their `.npmrc`).
+Both install it from GitHub (`"truetime-ui": "github:red5pro/truetime-ui"`); npm runs `prepare`
+to build `dist/` on install, since `dist/` isn't committed.
 See [README.md](README.md) for the full export table.
 
 ## This repo is the single source of UI
@@ -72,5 +73,7 @@ npm test             # vitest
 npm run typecheck && npm run lint && npm run format:check
 ```
 
-Run build, tests, typecheck and lint before finishing a change. The apps hold an installed copy, so
-after rebuilding, run `npm run ui:sync` in each app and restart its dev server to see the change.
+Run build, tests, typecheck and lint before finishing a change. To try a change in an app before
+pushing, rebuild here, then run `npm run ui:sync` in the app (installs this checkout without saving)
+and restart its dev server. After pushing, run `npm update truetime-ui` in each app so its lockfile
+picks up the new commit.
