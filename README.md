@@ -1,4 +1,4 @@
-# truetime-ui
+# TrueTime™ UI
 
 Shared UI library for TrueTime frontend apps:
 design tokens, the MUI theme, the brand font and a small set of accessible components.
