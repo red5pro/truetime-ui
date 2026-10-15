@@ -21,6 +21,7 @@ import {
   ExpandMore,
   BarChart,
 } from '@mui/icons-material';
+import { radii } from '../../tokens/tokens.js';
 
 export interface Device {
   deviceId: string;
@@ -310,7 +311,10 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         backdropFilter: 'blur(20px)',
         border: `1px solid ${alpha('#fff', 0.1)}`,
         maxHeight: 300,
-        minWidth: anchorEl?.offsetWidth || 200,
+        minWidth: Math.min(anchorEl?.offsetWidth || 200, 360),
+        // A compact popup under its button; long device names are truncated, not stretched across the page
+        maxWidth: 'min(360px, calc(100vw - 32px))',
+        borderRadius: `${radii.container}px`,
         mt: 1,
         zIndex: 9999,
         position: 'relative',
@@ -403,6 +407,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
           : devices.videoInputs?.map((device) => (
               <MenuItem
                 key={device.deviceId}
+                title={device.label}
                 onClick={() => handleCameraSelect(device.deviceId)}
                 selected={selectedCamera === device.deviceId}
               >
@@ -437,6 +442,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         {devices.audioInputs?.map((device) => (
           <MenuItem
             key={device.deviceId}
+            title={device.label}
             onClick={() => handleMicrophoneSelect(device.deviceId)}
             selected={selectedMicrophone === device.deviceId}
           >
@@ -519,6 +525,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         {devices.audioOutputs?.map((device) => (
           <MenuItem
             key={device.deviceId}
+            title={device.label}
             onClick={() => handleSpeakerSelect(device.deviceId)}
             selected={selectedSpeaker === device.deviceId}
           >

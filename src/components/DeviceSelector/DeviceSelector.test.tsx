@@ -27,6 +27,24 @@ describe('DeviceSelector', () => {
     expect(onCameraChange).toHaveBeenLastCalledWith('cam2');
   });
 
+  it('shows the full name of a long device on hover', () => {
+    const long =
+      'MacBook Pro Microphone (Built-in) with an unusually long device description (05ac:8514)';
+    renderWithTheme(
+      <DeviceSelector
+        devices={{
+          ...devices,
+          audioInputs: [{ deviceId: 'mic1', label: long, kind: 'audioinput' }],
+        }}
+        selectedCamera="cam1"
+        selectedMicrophone="mic1"
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /MacBook Pro Microphone/ }));
+    const item = screen.getByRole('menuitem', { name: long });
+    expect(item).toHaveAttribute('title', long);
+  });
+
   it('disables pickers without devices', () => {
     renderWithTheme(
       <DeviceSelector devices={devices} selectedCamera="cam1" selectedMicrophone="mic1" />,
