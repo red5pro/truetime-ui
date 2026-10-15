@@ -79,4 +79,5 @@ export {
   type TextProps,
   type TextTone,
 } from './components/Typography/Typography.js';
+export { Switch, type SwitchProps } from './components/Switch/Switch.js';
 export { VideoTile, type VideoTileProps } from './components/VideoTile/VideoTile.js';
