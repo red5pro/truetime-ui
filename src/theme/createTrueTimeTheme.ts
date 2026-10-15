@@ -413,6 +413,30 @@ function buildTheme(name: ThemeName): Theme {
         *, *::before, *::after {
           font-family: '${fontFamily.display}', ${fontFamily.fallback} !important;
         }
+        /* Dark scrollbars everywhere: black track, dark gray thumb. color-scheme also darkens
+           native controls; scrollbar-color covers Chrome/Edge/Firefox and inherits into every
+           scroll container, the ::-webkit-scrollbar rules cover Safari. */
+        html {
+          color-scheme: dark;
+          scrollbar-color: ${colors.themeColor60} ${colors.themeColor90};
+        }
+        *::-webkit-scrollbar {
+          width: 10px;
+          height: 10px;
+          background-color: ${colors.themeColor90};
+        }
+        *::-webkit-scrollbar-track,
+        *::-webkit-scrollbar-corner {
+          background-color: ${colors.themeColor90};
+        }
+        *::-webkit-scrollbar-thumb {
+          background-color: ${colors.themeColor60};
+          border-radius: 5px;
+          border: 2px solid ${colors.themeColor90};
+        }
+        *::-webkit-scrollbar-thumb:hover {
+          background-color: ${colors.themeColor50};
+        }
       `,
       },
     },

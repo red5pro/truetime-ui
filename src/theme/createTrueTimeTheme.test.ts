@@ -15,4 +15,15 @@ describe('createTrueTimeTheme', () => {
     expect(createTrueTimeTheme('toString').truetime.name).toBe('black');
     expect(createTrueTimeTheme().palette.background.default).toBe(blackPalette.themeColor80);
   });
+
+  it('gives every palette dark scrollbars', () => {
+    for (const [name, palette] of [
+      ['black', blackPalette],
+      ['blue', bluePalette],
+    ] as const) {
+      const css = String(createTrueTimeTheme(name).components?.MuiCssBaseline?.styleOverrides);
+      expect(css).toContain(`scrollbar-color: ${palette.themeColor60} ${palette.themeColor90}`);
+      expect(css).toContain('color-scheme: dark');
+    }
+  });
 });
