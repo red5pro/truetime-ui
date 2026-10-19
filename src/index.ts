@@ -80,4 +80,6 @@ export {
   type TextTone,
 } from './components/Typography/Typography.js';
 export { Switch, type SwitchProps } from './components/Switch/Switch.js';
+export { RailButton, type RailButtonProps } from './components/RailButton/RailButton.js';
+export { OptionTile, type OptionTileProps } from './components/OptionTile/OptionTile.js';
 export { VideoTile, type VideoTileProps } from './components/VideoTile/VideoTile.js';
