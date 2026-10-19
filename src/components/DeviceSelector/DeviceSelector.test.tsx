@@ -52,4 +52,13 @@ describe('DeviceSelector', () => {
     expect(screen.getByRole('button', { name: /no device selected/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /FaceTime HD/ })).toBeEnabled();
   });
+
+  it('stacks the pickers at full width when vertical', () => {
+    renderWithTheme(
+      <DeviceSelector devices={devices} selectedCamera="cam1" orientation="vertical" />,
+    );
+    const camera = screen.getByRole('button', { name: /FaceTime HD/ });
+    expect(camera).toHaveClass('MuiButton-fullWidth');
+    expect(camera.parentElement).toHaveStyle({ flexDirection: 'column' });
+  });
 });
