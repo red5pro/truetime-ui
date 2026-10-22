@@ -3,7 +3,7 @@ import { alpha, type SxProps, type Theme } from '@mui/material/styles';
 import type { ReactNode } from 'react';
 import { themeColors } from '../styleUtils.js';
 
-export type StatusTone = 'live' | 'success' | 'warning' | 'neutral';
+export type StatusTone = 'live' | 'success' | 'warning' | 'error' | 'neutral';
 
 export interface StatusBadgeProps {
   tone?: StatusTone;
@@ -11,7 +11,10 @@ export interface StatusBadgeProps {
   sx?: SxProps<Theme>;
 }
 
-/** Compact status label, e.g. LIVE on a video or a studio card. */
+/**
+ * Compact status label, e.g. LIVE on a video or a studio card. `error` is a problem state (tinted
+ * like success and warning); `live` is the solid red on-air badge.
+ */
 export function StatusBadge({ tone = 'neutral', children, sx }: StatusBadgeProps) {
   return (
     <Box
@@ -23,6 +26,7 @@ export function StatusBadge({ tone = 'neutral', children, sx }: StatusBadgeProps
             live: colors.error,
             success: colors.success,
             warning: colors.warning,
+            error: colors.error,
             neutral: colors.mutedText,
           }[tone];
           return {
