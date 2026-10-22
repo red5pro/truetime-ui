@@ -53,7 +53,8 @@ change in each app.
 
 ## Adding a token
 
-Add it to `src/tokens/`. Colors go in **both** palettes (`black` and `blue`), plus a
+Add it to `src/tokens/`. Colors go in **every** palette (`black`, `blue`, `purple`, `emerald`, `aurora`,
+`sunset`, `ocean`), plus a
 `semanticColors` alias if components need it by role. Export it from `src/index.ts`. Values change
 here, not in the apps.
 

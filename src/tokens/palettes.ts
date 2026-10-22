@@ -1,5 +1,6 @@
 /**
- * Color palettes, extracted from the TrueTime Meetings black and blue themes.
+ * Color palettes: the TrueTime Meetings black and blue themes, and more dark themes in the same
+ * shape (some with a gradient behind the page).
  *
  * The numbered `themeColor*` keys are a lightness scale (0 = lightest, 99 = pure white for text)
  * and are exposed on the MUI theme as `palette.themeColor[n]`. Prefer the semantic aliases in
@@ -39,6 +40,9 @@ export interface TrueTimePalette {
   hoverColor: string;
   activeColor: string;
   focusColor: string;
+
+  /** A CSS gradient drawn behind the page (over themeColor80), fixed while it scrolls. */
+  backgroundGradient?: string;
 }
 
 export const blackPalette: TrueTimePalette = {
@@ -113,9 +117,205 @@ export const bluePalette: TrueTimePalette = {
   focusColor: '#3B82F6',
 };
 
+/** Deep violet. */
+export const purplePalette: TrueTimePalette = {
+  themeColor0: '#F3E8FF',
+  themeColor10: '#E9D5FF',
+  themeColor20: '#D8B4FE',
+  themeColor30: '#C084FC',
+  themeColor40: '#A855F7',
+  themeColor50: '#7E22CE',
+  themeColor60: '#4C1D95',
+  themeColor70: '#2E1065',
+  themeColor71: '#25104F',
+  themeColor72: '#1F0D42',
+  themeColor75: '#170A33',
+  themeColor80: '#0F0622',
+  themeColor85: '#0A0418',
+  themeColor90: '#06020F',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#FAF5FF',
+  chatText: '#FAF5FF',
+  secondaryText: '#C4B5FD',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#A855F7',
+
+  error: '#F87171',
+  warning: '#FBBF24',
+  success: '#34D399',
+  info: '#A78BFA',
+
+  primaryColor: '#A855F7',
+  secondaryColor: '#2E1065',
+
+  hoverColor: '#9333EA',
+  activeColor: '#7E22CE',
+  focusColor: '#C084FC',
+};
+
+/** Deep green. */
+export const emeraldPalette: TrueTimePalette = {
+  themeColor0: '#ECFDF5',
+  themeColor10: '#D1FAE5',
+  themeColor20: '#A7F3D0',
+  themeColor30: '#6EE7B7',
+  themeColor40: '#10B981',
+  themeColor50: '#047857',
+  themeColor60: '#064E3B',
+  themeColor70: '#053B2D',
+  themeColor71: '#043226',
+  themeColor72: '#032A20',
+  themeColor75: '#02201A',
+  themeColor80: '#011712',
+  themeColor85: '#01100D',
+  themeColor90: '#000A08',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#F0FDF4',
+  chatText: '#F0FDF4',
+  secondaryText: '#9FD8C0',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#10B981',
+
+  error: '#F87171',
+  warning: '#FBBF24',
+  success: '#34D399',
+  info: '#38BDF8',
+
+  primaryColor: '#10B981',
+  secondaryColor: '#053B2D',
+
+  hoverColor: '#059669',
+  activeColor: '#047857',
+  focusColor: '#34D399',
+};
+
+/** Night sky with a violet-to-teal gradient behind the page. */
+export const auroraPalette: TrueTimePalette = {
+  themeColor0: '#E0FBFF',
+  themeColor10: '#B8F1F8',
+  themeColor20: '#7EE0EE',
+  themeColor30: '#3CC8DC',
+  themeColor40: '#14A3C7',
+  themeColor50: '#2C4A7A',
+  themeColor60: '#253A66',
+  themeColor70: '#1C2B52',
+  themeColor71: '#182545',
+  themeColor72: '#141F3B',
+  themeColor75: '#101830',
+  themeColor80: '#0B1124',
+  themeColor85: '#080C1A',
+  themeColor90: '#050810',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#F5FBFF',
+  chatText: '#F5FBFF',
+  secondaryText: '#A9C1DA',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#3CC8DC',
+
+  error: '#F87171',
+  warning: '#FBBF24',
+  success: '#34D399',
+  info: '#3CC8DC',
+
+  primaryColor: '#3CC8DC',
+  secondaryColor: '#1C2B52',
+
+  hoverColor: '#22B2CC',
+  activeColor: '#1891A8',
+  focusColor: '#7EE0EE',
+
+  backgroundGradient: 'linear-gradient(135deg, #1A0B3D 0%, #0B1124 45%, #04303A 100%)',
+};
+
+/** Warm plum with a plum-to-ember gradient behind the page. */
+export const sunsetPalette: TrueTimePalette = {
+  themeColor0: '#FFF1EB',
+  themeColor10: '#FFD9C7',
+  themeColor20: '#FDB394',
+  themeColor30: '#FB8A60',
+  themeColor40: '#F2643C',
+  themeColor50: '#7A3048',
+  themeColor60: '#5C2440',
+  themeColor70: '#441A34',
+  themeColor71: '#3A162D',
+  themeColor72: '#311327',
+  themeColor75: '#280F21',
+  themeColor80: '#1E0B19',
+  themeColor85: '#160812',
+  themeColor90: '#0E050B',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#FFF7F2',
+  chatText: '#FFF7F2',
+  secondaryText: '#E2B6A8',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#F2643C',
+
+  error: '#FF5C5C',
+  warning: '#FBBF24',
+  success: '#4ADE80',
+  info: '#FB8A60',
+
+  primaryColor: '#F2643C',
+  secondaryColor: '#441A34',
+
+  hoverColor: '#E0532C',
+  activeColor: '#C44320',
+  focusColor: '#FB8A60',
+
+  backgroundGradient: 'linear-gradient(160deg, #3B0D2E 0%, #1E0B19 50%, #3D1A0C 100%)',
+};
+
+/** Deep sea with a teal glow from the top of the page. */
+export const oceanPalette: TrueTimePalette = {
+  themeColor0: '#E6F7FB',
+  themeColor10: '#BFEAF4',
+  themeColor20: '#8AD6EA',
+  themeColor30: '#4FBEDC',
+  themeColor40: '#1FA2C8',
+  themeColor50: '#1B5470',
+  themeColor60: '#16425A',
+  themeColor70: '#11334A',
+  themeColor71: '#0E2B3F',
+  themeColor72: '#0C2536',
+  themeColor75: '#0A1E2D',
+  themeColor80: '#071723',
+  themeColor85: '#05111A',
+  themeColor90: '#030B11',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#F2FBFE',
+  chatText: '#F2FBFE',
+  secondaryText: '#9CC3D4',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#1FA2C8',
+
+  error: '#F87171',
+  warning: '#FBBF24',
+  success: '#34D399',
+  info: '#4FBEDC',
+
+  primaryColor: '#1FA2C8',
+  secondaryColor: '#11334A',
+
+  hoverColor: '#1A8FB2',
+  activeColor: '#167A98',
+  focusColor: '#4FBEDC',
+
+  backgroundGradient: 'radial-gradient(ellipse at top, #0F3B52 0%, #071723 60%, #030B11 100%)',
+};
+
 export const palettes = {
   black: blackPalette,
   blue: bluePalette,
+  purple: purplePalette,
+  emerald: emeraldPalette,
+  aurora: auroraPalette,
+  sunset: sunsetPalette,
+  ocean: oceanPalette,
 } as const;
 
 export type ThemeName = keyof typeof palettes;
@@ -124,6 +324,8 @@ export const themeNames = Object.keys(palettes) as ThemeName[];
 
 export interface SemanticColors {
   background: string;
+  /** The palette's page gradient (backgroundGradient), or `none`. */
+  backgroundImage: string;
   surface: string;
   surfaceRaised: string;
   surfaceHover: string;
@@ -147,6 +349,7 @@ export interface SemanticColors {
 export function semanticColors(palette: TrueTimePalette): SemanticColors {
   return {
     background: palette.themeColor80,
+    backgroundImage: palette.backgroundGradient ?? 'none',
     surface: palette.themeColor75,
     surfaceRaised: palette.themeColor70,
     surfaceHover: palette.themeColor60,

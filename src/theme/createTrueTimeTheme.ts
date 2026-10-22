@@ -410,6 +410,11 @@ function buildTheme(name: ThemeName): Theme {
           background-color: ${colors.themeColor80};
           color: ${colors.themeColor99};
         }
+        body {
+          background-image: ${colors.backgroundGradient ?? 'none'};
+          background-attachment: fixed;
+          min-height: 100vh;
+        }
         *, *::before, *::after {
           font-family: '${fontFamily.display}', ${fontFamily.fallback} !important;
         }
