@@ -40,6 +40,7 @@ export function FormField({
   const generatedId = useId();
   const inputId = id ?? `tt-field-${generatedId}`;
   const helperTextId = helperText ? `${inputId}-helper` : undefined;
+  const labelId = `${inputId}-label`;
 
   return (
     <FormControl
@@ -50,8 +51,10 @@ export function FormField({
       className={className}
       sx={sx}
     >
-      <FormFieldContext.Provider value={{ inputId, helperTextId }}>
-        <Label htmlFor={inputId}>{label}</Label>
+      <FormFieldContext.Provider value={{ inputId, labelId, helperTextId }}>
+        <Label id={labelId} htmlFor={inputId}>
+          {label}
+        </Label>
         {children}
         {helperText && (
           <FormHelperText id={helperTextId} sx={{ mx: 0, mt: '6px', fontSize: 14 }}>
