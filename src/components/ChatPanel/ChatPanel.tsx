@@ -36,6 +36,8 @@ export interface ChatPanelProps {
   header?: ReactNode;
   /** Controls beside a message's author line, e.g. a menu of actions on it. */
   renderMessageActions?: (message: ChatMessage) => ReactNode;
+  /** Shown right after a message's author name, e.g. an icon for the sender's role. */
+  renderAuthorBadge?: (message: ChatMessage) => ReactNode;
   emptyText?: ReactNode;
   placeholder?: string;
   maxLength?: number;
@@ -56,6 +58,7 @@ export function ChatPanel({
   unavailable,
   header,
   renderMessageActions,
+  renderAuthorBadge,
   emptyText = 'No messages yet',
   placeholder = 'Send a message',
   maxLength = 1000,
@@ -145,8 +148,11 @@ export function ChatPanel({
                   mb: 0.5,
                 })}
               >
+                <span>{message.mine ? 'You' : message.author}</span>
+                {renderAuthorBadge?.(message)}
                 <span>
-                  {message.mine ? 'You' : message.author} · {formatTime(message.timestamp)}
+                  {' '}
+                  · {formatTime(message.timestamp)}
                   {message.flagged && (
                     <Box component="span" sx={(theme) => ({ color: themeColors(theme).warning })}>
                       {' '}

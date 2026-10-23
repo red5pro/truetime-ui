@@ -85,4 +85,19 @@ describe('ChatPanel', () => {
     expect(screen.getByRole('button', { name: 'Actions for Me' })).toBeInTheDocument();
     expect(screen.getByRole('log')).toHaveTextContent(/Ada · .* · Flagged/);
   });
+
+  it('shows a badge right after each author name', () => {
+    renderWithTheme(
+      <ChatPanel
+        messages={messages}
+        onSend={() => {}}
+        renderAuthorBadge={(m) => <span role="img" aria-label={`${m.author} badge`} />}
+      />,
+    );
+    expect(screen.getByRole('img', { name: 'Ada badge' })).toBeInTheDocument();
+    const author = screen.getByText('Ada');
+    expect(author.nextElementSibling).toBe(screen.getByRole('img', { name: 'Ada badge' }));
+    // The author line still reads as one line of text
+    expect(screen.getByRole('log')).toHaveTextContent(/Ada · \d/);
+  });
 });
