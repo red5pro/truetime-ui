@@ -45,4 +45,13 @@ describe('VideoTile', () => {
     renderWithTheme(<VideoTile stream={null} name="Ada" actions={<button>Add to Room</button>} />);
     expect(screen.getByRole('button', { name: 'Add to Room' })).toBeInTheDocument();
   });
+
+  it('fills the whole tile with the avatar when asked, instead of a circle in the middle', () => {
+    const { rerender } = renderWithTheme(<VideoTile stream={null} name="Ada Lovelace" />);
+    const circle = () => screen.getByText('AL').parentElement!;
+    expect(getComputedStyle(circle()).width).toBe('28%');
+    rerender(<VideoTile stream={null} name="Ada Lovelace" avatarFill />);
+    expect(getComputedStyle(circle()).width).toBe('100%');
+    expect(getComputedStyle(circle()).height).toBe('100%');
+  });
 });

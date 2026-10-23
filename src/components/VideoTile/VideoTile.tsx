@@ -32,6 +32,11 @@ export interface VideoTileProps {
   /** Shown instead of the name's initials when there's no video (e.g. an icon for "offline"). */
   avatar?: ReactNode;
   /**
+   * Without video, the avatar (or initials) fills the whole tile instead of a circle in its
+   * middle; for small round tiles such as a participant's circle in a list.
+   */
+  avatarFill?: boolean;
+  /**
    * id of the <video> element, for SDKs that look it up (red5pro-webrtc-sdk publishes through
    * `#red5pro-publisher`). Must be unique on the page.
    */
@@ -62,6 +67,7 @@ export function VideoTile({
   actions,
   highlighted = false,
   avatar,
+  avatarFill = false,
   videoId,
   className,
   sx,
@@ -127,9 +133,9 @@ export function VideoTile({
           <Box
             aria-hidden
             sx={(theme) => ({
-              width: '28%',
-              maxWidth: 96,
-              aspectRatio: '1',
+              ...(avatarFill
+                ? { width: '100%', height: '100%' }
+                : { width: '28%', maxWidth: 96, aspectRatio: '1' }),
               borderRadius: '50%',
               display: 'grid',
               placeItems: 'center',
