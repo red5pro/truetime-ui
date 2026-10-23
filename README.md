@@ -38,7 +38,7 @@ import { TrueTimeThemeProvider } from 'truetime-ui';
 
 ```tsx
 import { Button, FormField, Input, PasswordInput, Checkbox, Alert, Card, Heading, Text, Spinner } from 'truetime-ui';
-import logo from 'truetime-ui/assets/images/red5-cloud-logo.svg';
+import logo from 'truetime-ui/assets/images/red5-truetime-logo.png';
 
 <FormField label="Email" error={!!error} helperText={error} required>
   <Input name="email" type="email" autoComplete="username" />
@@ -77,7 +77,7 @@ transform the package.
 | `DeviceSelector`                                                                                                                                   | Camera/mic/speaker pickers with a mic level meter (moved from the Meetings lobby); pass `isMobile` for front/back camera choices; `orientation="vertical"` stacks them at full width (settings popups)                                                                                                                                                             |
 | `ControlButton`, `roundControlStyle`, `rectangularControlStyle`                                                                                    | Meetings media control button (`glass`, `overlay`), moved from Meetings `CustomizedBtn`                                                                                                                                                                                                                                                                            |
 | `focusRingStyle(theme)`, `themeColors(theme)`                                                                                                      | Style helpers so app-level interactive elements match the components                                                                                                                                                                                                                                                                                               |
-| `truetime-ui/fonts.css`, `truetime-ui/assets/*`                                                                                                    | Brand font and images                                                                                                                                                                                                                                                                                                                                              |
+| `truetime-ui/fonts.css`, `truetime-ui/assets/*`                                                                                                    | Brand font and images: `images/red5-truetime-logo.png` (Red5 mark and wordmark, white lettering for the dark themes), `images/red5-truetime-solutions-logo.png` (the same with "TrueTime Solutions" underneath), `images/red5-cloud-logo.svg`                                                                                                                      |
 
 ## Used by
 
