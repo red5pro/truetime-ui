@@ -134,12 +134,26 @@ export function VideoTile({
               display: 'grid',
               placeItems: 'center',
               fontWeight: 600,
-              fontSize: 'clamp(12px, 2.4vw, 28px)',
+              // The circle is the size container its initials are measured against
+              containerType: 'inline-size',
               color: themeColors(theme).text,
               backgroundColor: themeColors(theme).surfaceHover,
             })}
           >
-            {avatar ?? initials(name)}
+            {/* Initials are 35% of the circle, whatever the tile or window size */}
+            <Box
+              component="span"
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: 'grid',
+                placeItems: 'center',
+                fontSize: '35cqi',
+                lineHeight: 1,
+              }}
+            >
+              {avatar ?? initials(name)}
+            </Box>
           </Box>
         </Box>
       )}
