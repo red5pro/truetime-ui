@@ -93,3 +93,7 @@ export {
   type VolumeControlProps,
 } from './components/VolumeControl/VolumeControl.js';
 export { VideoTile, type VideoTileProps } from './components/VideoTile/VideoTile.js';
+export {
+  TruncatedText,
+  type TruncatedTextProps,
+} from './components/TruncatedText/TruncatedText.js';
