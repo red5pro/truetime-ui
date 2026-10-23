@@ -36,4 +36,9 @@ describe('createTrueTimeTheme', () => {
       String(createTrueTimeTheme('black').components?.MuiCssBaseline?.styleOverrides),
     ).toContain('background-image: none');
   });
+
+  it('colors menu icons like the menu item’s text', () => {
+    const overrides = createTrueTimeTheme('blue').components?.MuiListItemIcon?.styleOverrides;
+    expect(overrides?.root).toMatchObject({ color: 'inherit' });
+  });
 });

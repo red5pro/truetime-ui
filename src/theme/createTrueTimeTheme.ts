@@ -198,6 +198,8 @@ function buildTheme(name: ThemeName): Theme {
           root: {
             fontFamily: FONT,
             marginRight: 16,
+            // Same color as the menu item's text (MUI's default is a grey of its own)
+            color: 'inherit',
           },
         },
       },
