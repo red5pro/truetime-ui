@@ -5,6 +5,12 @@ import Slider from '@mui/material/Slider';
 import { VolumeDown, VolumeOff, VolumeUp } from '@mui/icons-material';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 
+// The theme's IconButton padding (createTrueTimeTheme), MUI's size="small" Slider thumb, and the
+// blank space at the left of the volume icons (3 of 24 units, at 20px)
+const BUTTON_PADDING = 8;
+const SMALL_THUMB_SIZE = 12;
+const ICON_INSET = 2.5;
+
 export interface VolumeControlProps extends Omit<BoxProps, 'onChange'> {
   /** Playback volume, 0 (muted) to 1. */
   value: number;
@@ -16,7 +22,8 @@ export interface VolumeControlProps extends Omit<BoxProps, 'onChange'> {
 
 /**
  * A mute button and a volume slider for one audio source. Unmuting goes back to the volume set
- * before muting (full volume if it started muted).
+ * before muting (full volume if it started muted). The icon and the slider's thumb (at either end)
+ * line up with the edges of the box, so it sits evenly in its container.
  */
 export function VolumeControl({
   value,
@@ -47,6 +54,8 @@ export function VolumeControl({
         disabled={disabled}
         onClick={() => onChange(muted ? lastAudible.current : 0)}
         sx={(theme) => ({
+          // The icon, not the button's padding, starts at the left edge
+          ml: `-${BUTTON_PADDING}px`,
           color: themeColors(theme).text,
           '&.Mui-focusVisible': focusRingStyle(theme),
         })}
@@ -73,6 +82,10 @@ export function VolumeControl({
           return {
             flex: 1,
             minWidth: 0,
+            // The thumb is centred on the track's ends, so the track is inset by half of it to keep
+            // the thumb inside the box, and on the right by the icon's blank space too, to match
+            ml: `${SMALL_THUMB_SIZE / 2}px`,
+            mr: `${SMALL_THUMB_SIZE / 2 + ICON_INSET}px`,
             color: colors.info,
             '& .MuiSlider-rail': { backgroundColor: colors.surfaceHover, opacity: 1 },
             '& .MuiSlider-thumb': {
