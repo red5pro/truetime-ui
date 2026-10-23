@@ -19,14 +19,23 @@ export interface ChatMessage {
   timestamp: Date | string | number;
   /** Sent by the current user. */
   mine?: boolean;
+  /** Marked for review (e.g. reported); outlined and announced as flagged. */
+  flagged?: boolean;
 }
 
 export interface ChatPanelProps {
   messages: ChatMessage[];
-  /** Return false when the message could not be sent; the draft is kept. */
-  onSend: (text: string) => boolean | void;
+  /**
+   * Return false (or a promise of false) when the message could not be sent; the draft is kept.
+   * While a returned promise is pending, sending again is disabled.
+   */
+  onSend: (text: string) => boolean | void | Promise<boolean | void>;
   /** Replaces the composer with this explanation (e.g. chat not available). */
   unavailable?: ReactNode;
+  /** Shown above the log, e.g. a notice or controls for the whole chat. */
+  header?: ReactNode;
+  /** Controls beside a message's author line, e.g. a menu of actions on it. */
+  renderMessageActions?: (message: ChatMessage) => ReactNode;
   emptyText?: ReactNode;
   placeholder?: string;
   maxLength?: number;
@@ -45,12 +54,15 @@ export function ChatPanel({
   messages,
   onSend,
   unavailable,
+  header,
+  renderMessageActions,
   emptyText = 'No messages yet',
   placeholder = 'Send a message',
   maxLength = 1000,
   sendLabel = 'Send message',
 }: ChatPanelProps) {
   const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,8 +73,20 @@ export function ChatPanel({
   const send = (event?: FormEvent) => {
     event?.preventDefault();
     const text = draft.trim();
-    if (!text) return;
-    if (onSend(text) !== false) setDraft('');
+    if (!text || sending) return;
+    const result = onSend(text);
+    if (!(result instanceof Promise)) {
+      if (result !== false) setDraft('');
+      return;
+    }
+    setSending(true);
+    result
+      .then((sent) => {
+        // Text typed meanwhile is kept
+        if (sent !== false) setDraft((current) => (current.trim() === text ? '' : current));
+      })
+      .catch(() => {})
+      .finally(() => setSending(false));
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,6 +95,7 @@ export function ChatPanel({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%' }}>
+      {header}
       <Box
         ref={logRef}
         role="log"
@@ -109,8 +134,27 @@ export function ChatPanel({
                 alignItems: message.mine ? 'flex-end' : 'flex-start',
               }}
             >
-              <Box sx={(theme) => ({ fontSize: 12, color: themeColors(theme).mutedText, mb: 0.5 })}>
-                {message.mine ? 'You' : message.author} · {formatTime(message.timestamp)}
+              <Box
+                sx={(theme) => ({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  maxWidth: '100%',
+                  fontSize: 12,
+                  color: themeColors(theme).mutedText,
+                  mb: 0.5,
+                })}
+              >
+                <span>
+                  {message.mine ? 'You' : message.author} · {formatTime(message.timestamp)}
+                  {message.flagged && (
+                    <Box component="span" sx={(theme) => ({ color: themeColors(theme).warning })}>
+                      {' '}
+                      · Flagged
+                    </Box>
+                  )}
+                </span>
+                {renderMessageActions?.(message)}
               </Box>
               <Box
                 sx={(theme) => ({
@@ -126,6 +170,7 @@ export function ChatPanel({
                   backgroundColor: message.mine
                     ? themeColors(theme).secondary
                     : themeColors(theme).surfaceRaised,
+                  outline: message.flagged ? `1px solid ${themeColors(theme).warning}` : 'none',
                 })}
               >
                 {message.text}
@@ -166,7 +211,7 @@ export function ChatPanel({
             <IconButton
               type="submit"
               aria-label={sendLabel}
-              disabled={!draft.trim()}
+              disabled={!draft.trim() || sending}
               sx={(theme) => ({
                 color: themeColors(theme).text,
                 '&:hover': { backgroundColor: themeColors(theme).surfaceHover },

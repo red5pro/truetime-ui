@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
 import { ChatPanel } from './ChatPanel.js';
 
@@ -44,5 +44,45 @@ describe('ChatPanel', () => {
     renderWithTheme(<ChatPanel messages={[]} onSend={() => {}} unavailable="Chat is off" />);
     expect(screen.getByText('Chat is off')).toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
+  it('keeps the draft and blocks sending until an async send succeeds', async () => {
+    let finish: (sent: boolean) => void = () => {};
+    const onSend = vi.fn(() => new Promise<boolean>((resolve) => (finish = resolve)));
+    renderWithTheme(<ChatPanel messages={[]} onSend={onSend} />);
+    const input = screen.getByRole('textbox', { name: 'Send a message' });
+    fireEvent.change(input, { target: { value: 'hey' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(input).toHaveValue('hey');
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled();
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onSend).toHaveBeenCalledTimes(1);
+
+    await act(async () => finish(true));
+    expect(input).toHaveValue('');
+  });
+
+  it('keeps the draft when an async send fails', async () => {
+    renderWithTheme(<ChatPanel messages={[]} onSend={() => Promise.resolve(false)} />);
+    const input = screen.getByRole('textbox', { name: 'Send a message' });
+    fireEvent.change(input, { target: { value: 'hey' } });
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+    expect(input).toHaveValue('hey');
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeEnabled();
+  });
+
+  it('shows a header, marks flagged messages and renders actions for each message', () => {
+    renderWithTheme(
+      <ChatPanel
+        messages={[{ ...messages[0]!, flagged: true }, messages[1]!]}
+        onSend={() => {}}
+        header={<div>Chat is off for others</div>}
+        renderMessageActions={(m) => <button type="button">Actions for {m.author}</button>}
+      />,
+    );
+    expect(screen.getByText('Chat is off for others')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Actions for Ada' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Actions for Me' })).toBeInTheDocument();
+    expect(screen.getByRole('log')).toHaveTextContent(/Ada · .* · Flagged/);
   });
 });
