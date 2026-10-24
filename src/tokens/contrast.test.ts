@@ -1,4 +1,10 @@
-import { contrastRatio, looksLikeTally, readableOn, relativeLuminance } from './contrast.js';
+import {
+  contrastRatio,
+  looksLikeTally,
+  mixColors,
+  readableOn,
+  relativeLuminance,
+} from './contrast.js';
 import { broadcastColors, palettes, semanticColors } from './palettes.js';
 
 describe('contrast helpers', () => {
@@ -13,6 +19,12 @@ describe('contrast helpers', () => {
 
   it('rejects colors it can’t read', () => {
     expect(() => relativeLuminance('red')).toThrow();
+  });
+
+  it('mixes one color into another', () => {
+    expect(mixColors('#000000', '#FFFFFF', 0)).toBe('#000000');
+    expect(mixColors('#000000', '#FFFFFF', 1)).toBe('#ffffff');
+    expect(mixColors('#000000', '#FF0000', 0.5)).toBe('#800000');
   });
 
   it('picks the text color that reads on a background', () => {

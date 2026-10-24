@@ -34,6 +34,20 @@ export function readableOn(background: string, dark = '#0B0D10', light = '#FFFFF
   return contrastRatio(background, light) >= contrastRatio(background, dark) ? light : dark;
 }
 
+/** `overlay` laid over `base` at `amount` (0-1), as an opaque hex color. */
+export function mixColors(base: string, overlay: string, amount: number): string {
+  const a = rgb(base);
+  const b = rgb(overlay);
+  if (!a || !b) throw new Error(`Not hex colors: ${base}, ${overlay}`);
+  return `#${a
+    .map((c, i) =>
+      Math.round(c + (b[i] - c) * amount)
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('')}`;
+}
+
 /** Hue in degrees (0-360) and saturation (0-1) of a hex color. */
 function hueSat(hex: string): [number, number] {
   const [r, g, b] = rgb(hex)!.map((c) => c / 255);
