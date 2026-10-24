@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
 import { Button } from './Button.js';
 
@@ -35,5 +35,57 @@ describe('Button as a link', () => {
       </Button>,
     );
     expect(screen.getByRole('link', { name: 'Studios' })).toHaveAttribute('href', '/studios');
+  });
+});
+
+describe('Button with holdMs', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('confirms only once it is held long enough', () => {
+    const onHoldComplete = vi.fn();
+    renderWithTheme(
+      <Button holdMs={600} onHoldComplete={onHoldComplete}>
+        Go Live
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Go Live' });
+    expect(button).toHaveAttribute('aria-description', 'Press and hold');
+
+    // Let go early: nothing happens
+    fireEvent.pointerDown(button, { button: 0 });
+    act(() => vi.advanceTimersByTime(300));
+    fireEvent.pointerUp(button);
+    act(() => vi.advanceTimersByTime(600));
+    expect(onHoldComplete).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(button, { button: 0 });
+    expect(button).toHaveAttribute('data-holding', 'true');
+    act(() => vi.advanceTimersByTime(600));
+    expect(onHoldComplete).toHaveBeenCalledOnce();
+    expect(button).not.toHaveAttribute('data-holding');
+  });
+
+  it('holds with Space or Enter, and a click alone does nothing', () => {
+    const onHoldComplete = vi.fn();
+    renderWithTheme(
+      <Button holdMs={600} onHoldComplete={onHoldComplete}>
+        Go Live
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Go Live' });
+    fireEvent.click(button);
+    expect(onHoldComplete).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(button, { key: 'Enter' });
+    fireEvent.keyDown(button, { key: 'Enter', repeat: true });
+    act(() => vi.advanceTimersByTime(599));
+    fireEvent.keyUp(button, { key: 'Enter' });
+    act(() => vi.advanceTimersByTime(10));
+    expect(onHoldComplete).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(button, { key: ' ' });
+    act(() => vi.advanceTimersByTime(600));
+    expect(onHoldComplete).toHaveBeenCalledOnce();
   });
 });

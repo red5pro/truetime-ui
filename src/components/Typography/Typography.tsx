@@ -1,5 +1,6 @@
 import Typography, { type TypographyProps } from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
+import { monoText } from '../../tokens/tokens.js';
 import { themeColors } from '../styleUtils.js';
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -21,6 +22,8 @@ export type TextTone = 'default' | 'muted' | 'error' | 'success';
 
 export interface TextProps extends TypographyProps {
   tone?: TextTone;
+  /** Mono face with tabular digits, for timecodes, durations and measurements. */
+  mono?: boolean;
 }
 
 const toneColor: Record<Exclude<TextTone, 'default'>, (theme: Theme) => string> = {
@@ -30,11 +33,21 @@ const toneColor: Record<Exclude<TextTone, 'default'>, (theme: Theme) => string> 
 };
 
 /** Body text; defaults to `body1` rendered as a paragraph. */
-export function Text({ tone = 'default', variant = 'body1', sx, ...props }: TextProps) {
+export function Text({
+  tone = 'default',
+  variant = 'body1',
+  mono = false,
+  sx,
+  ...props
+}: TextProps) {
   return (
     <Typography
       variant={variant}
-      sx={[tone !== 'default' && { color: toneColor[tone] }, ...(Array.isArray(sx) ? sx : [sx])]}
+      sx={[
+        tone !== 'default' && { color: toneColor[tone] },
+        mono && monoText,
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
       {...props}
     />
   );

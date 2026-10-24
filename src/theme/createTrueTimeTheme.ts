@@ -13,6 +13,7 @@ import {
   fontFamily,
   radii,
   typography,
+  type Typeface,
 } from '../tokens/tokens.js';
 
 type ThemeColorScale = {
@@ -78,10 +79,13 @@ declare module '@mui/material/styles' {
 
 // The `!important` font declarations are carried over from Meetings, where they override
 // third-party widgets rendered inside the app.
-const FONT = `${fontFamily.display} !important`;
+const DISPLAY = `${fontFamily.display} !important`;
 
-function buildTheme(name: ThemeName): Theme {
+function buildTheme(name: ThemeName, typeface: Typeface): Theme {
   const colors = palettes[name];
+  // Text face: the brand face throughout, or Inter with the brand face kept for headings
+  const textFace = typeface === 'interface' ? fontFamily.ui : fontFamily.display;
+  const FONT = `'${textFace}', ${fontFamily.fallback} !important`;
 
   return createTheme({
     truetime: { name, palette: colors, colors: semanticColors(colors) },
@@ -91,13 +95,14 @@ function buildTheme(name: ThemeName): Theme {
         fontFamily: FONT,
       },
       h1: {
-        fontFamily: FONT,
+        fontFamily: DISPLAY,
         ...typography.h1,
       },
-      h2: typography.h2,
-      h3: typography.h3,
-      h5: typography.h5,
-      h6: typography.h6,
+      h2: { fontFamily: DISPLAY, ...typography.h2 },
+      h3: { fontFamily: DISPLAY, ...typography.h3 },
+      h4: { fontFamily: DISPLAY },
+      h5: { fontFamily: DISPLAY, ...typography.h5 },
+      h6: { fontFamily: DISPLAY, ...typography.h6 },
       body1: {
         ...typography.body1,
         color: '#FFFFFF',
@@ -154,7 +159,7 @@ function buildTheme(name: ThemeName): Theme {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            fontFamily: `${fontFamily.display}!important`,
+            fontFamily: FONT,
             padding: '12px 40px 32px',
             width: '100%',
             backgroundColor: colors.themeColor75,
@@ -164,7 +169,7 @@ function buildTheme(name: ThemeName): Theme {
       MuiDialogTitle: {
         styleOverrides: {
           root: {
-            fontFamily: `${fontFamily.display}!important`,
+            fontFamily: DISPLAY,
             color: colors.themeColor99,
             padding: '24px 0',
             fontSize: 24,
@@ -285,9 +290,10 @@ function buildTheme(name: ThemeName): Theme {
       },
       MuiTypography: {
         styleOverrides: {
-          root: {
-            fontFamily: FONT,
-          },
+          // After the variant styles, so headings get the brand face back here
+          root: ({ ownerState }) => ({
+            fontFamily: /^h[1-6]$/.test(String(ownerState.variant)) ? DISPLAY : FONT,
+          }),
         },
       },
       MuiTextField: {
@@ -408,7 +414,7 @@ function buildTheme(name: ThemeName): Theme {
         // @font-face rules live in truetime-ui/fonts.css so bundlers resolve the font files.
         styleOverrides: `
         html, body {
-          font-family: '${fontFamily.display}', ${fontFamily.fallback} !important;
+          font-family: '${textFace}', ${fontFamily.fallback} !important;
           background-color: ${colors.themeColor80};
           color: ${colors.themeColor99};
         }
@@ -418,7 +424,7 @@ function buildTheme(name: ThemeName): Theme {
           min-height: 100vh;
         }
         *, *::before, *::after {
-          font-family: '${fontFamily.display}', ${fontFamily.fallback} !important;
+          font-family: '${textFace}', ${fontFamily.fallback} !important;
         }
         /* Dark scrollbars everywhere: black track, dark gray thumb. color-scheme also darkens
            native controls; scrollbar-color covers Chrome/Edge/Firefox and inherits into every
@@ -544,6 +550,9 @@ function isThemeName(name: string): name is ThemeName {
  * Builds the MUI theme for a TrueTime palette. Unknown names fall back to `black`, matching the
  * Meetings behaviour for runtime-configured theme names.
  */
-export function createTrueTimeTheme(name: ThemeName | (string & {}) = 'black'): Theme {
-  return responsiveFontSizes(buildTheme(isThemeName(name) ? name : 'black'));
+export function createTrueTimeTheme(
+  name: ThemeName | (string & {}) = 'black',
+  { typeface = 'display' }: { typeface?: Typeface } = {},
+): Theme {
+  return responsiveFontSizes(buildTheme(isThemeName(name) ? name : 'black', typeface));
 }

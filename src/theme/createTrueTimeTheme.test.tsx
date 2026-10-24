@@ -1,3 +1,6 @@
+import { screen } from '@testing-library/react';
+import { Heading, Text } from '../components/Typography/Typography.js';
+import { renderWithTheme } from '../test/render.js';
 import { createTrueTimeTheme } from './createTrueTimeTheme.js';
 import { auroraPalette, bluePalette, blackPalette, palettes } from '../tokens/palettes.js';
 
@@ -40,5 +43,28 @@ describe('createTrueTimeTheme', () => {
   it('colors menu icons like the menu item’s text', () => {
     const overrides = createTrueTimeTheme('blue').components?.MuiListItemIcon?.styleOverrides;
     expect(overrides?.root).toMatchObject({ color: 'inherit' });
+  });
+
+  it('sets text in Inter with the interface typeface, keeping the brand face for headings', () => {
+    const brand = createTrueTimeTheme('broadcast');
+    const ui = createTrueTimeTheme('broadcast', { typeface: 'interface' });
+    expect(String(brand.components?.MuiCssBaseline?.styleOverrides)).toContain("'ClashDisplay'");
+    expect(String(ui.components?.MuiCssBaseline?.styleOverrides)).toContain("'Inter'");
+    expect(String(ui.typography.body1.fontFamily)).toContain('Inter');
+    expect(String(ui.typography.h6.fontFamily)).toContain('ClashDisplay');
+  });
+
+  it('keeps headings in the brand face over the text face', () => {
+    renderWithTheme(
+      <>
+        <Heading level={1} variant="h5">
+          Sign in
+        </Heading>
+        <Text>Body</Text>
+      </>,
+      'interface',
+    );
+    expect(getComputedStyle(screen.getByText('Sign in')).fontFamily).toContain('ClashDisplay');
+    expect(getComputedStyle(screen.getByText('Body')).fontFamily).toContain('Inter');
   });
 });

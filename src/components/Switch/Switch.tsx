@@ -1,10 +1,13 @@
 import MuiSwitch, { type SwitchProps as MuiSwitchProps } from '@mui/material/Switch';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 
-export type SwitchProps = MuiSwitchProps;
+export interface SwitchProps extends MuiSwitchProps {
+  /** `preview`: on is the preview tally green, for a switch that puts something in the preview. */
+  tone?: 'default' | 'preview';
+}
 
 /** On/off toggle for settings that apply immediately (e.g. a source shown or hidden). */
-export function Switch({ sx, inputProps, ...props }: SwitchProps) {
+export function Switch({ tone = 'default', sx, inputProps, ...props }: SwitchProps) {
   return (
     <MuiSwitch
       // Announced as on/off rather than checked/unchecked
@@ -22,7 +25,10 @@ export function Switch({ sx, inputProps, ...props }: SwitchProps) {
               '&.Mui-checked': {
                 transform: 'translateX(20px)',
                 color: colors.text,
-                '& + .MuiSwitch-track': { backgroundColor: colors.info, opacity: 1 },
+                '& + .MuiSwitch-track': {
+                  backgroundColor: tone === 'preview' ? colors.preview : colors.info,
+                  opacity: 1,
+                },
               },
               '&.Mui-focusVisible + .MuiSwitch-track': focusRingStyle(theme),
               '&.Mui-disabled + .MuiSwitch-track': { opacity: 0.4 },

@@ -6,7 +6,27 @@
 export const fontFamily = {
   /** Brand typeface; @font-face rules ship in `truetime-ui/fonts.css`. */
   display: 'ClashDisplay',
+  /** Interface text in dense screens (the `interface` typeface option). */
+  ui: 'Inter',
+  /** Timecodes, bitrates, durations and keycaps: fixed-width digits. */
+  mono: 'JetBrains Mono',
   fallback: 'sans-serif',
+  monoFallback: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+} as const;
+
+/**
+ * Which face the theme uses for text: `display` sets everything in the brand face (the Meetings
+ * look); `interface` keeps the brand face for headings and sets the rest in `fontFamily.ui`.
+ */
+export type Typeface = 'display' | 'interface';
+
+/**
+ * Mono text with tabular digits. `!important` because the theme's global rule sets every element
+ * in the theme's text face.
+ */
+export const monoText = {
+  fontFamily: `'${fontFamily.mono}', ${fontFamily.monoFallback} !important`,
+  fontVariantNumeric: 'tabular-nums',
 } as const;
 
 export const fontWeight = {

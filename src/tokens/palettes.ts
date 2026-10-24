@@ -308,6 +308,60 @@ export const oceanPalette: TrueTimePalette = {
   backgroundGradient: 'radial-gradient(ellipse at top, #0F3B52 0%, #071723 60%, #030B11 100%)',
 };
 
+/**
+ * Cool neutrals for the studio's control room: grey-blue surfaces that stay neutral next to video,
+ * and an error hue kept apart from the on-air red.
+ */
+export const broadcastPalette: TrueTimePalette = {
+  themeColor0: '#F1F3F5',
+  themeColor10: '#D9DDE2',
+  themeColor20: '#B4BBC4',
+  themeColor30: '#7A838F',
+  themeColor40: '#5B636E',
+  themeColor50: '#3A414C',
+  themeColor60: '#2C323B',
+  themeColor70: '#232830',
+  themeColor71: '#1E2229',
+  themeColor72: '#1A1E24',
+  themeColor75: '#12151A',
+  themeColor80: '#0B0D10',
+  themeColor85: '#08090C',
+  themeColor90: '#050608',
+  themeColor99: '#FFFFFF',
+
+  textColor: '#E8EBEF',
+  chatText: '#E8EBEF',
+  secondaryText: '#9AA3AE',
+  iconColor: '#FFFFFF',
+  darkIconColor: '#5B636E',
+
+  error: '#FF6B81',
+  warning: '#F5A524',
+  success: '#1FBF5B',
+  info: '#4C9AFF',
+
+  primaryColor: '#2A6FDB',
+  secondaryColor: '#232830',
+
+  hoverColor: '#2563C4',
+  activeColor: '#1F55A8',
+  focusColor: '#7AB8FF',
+};
+
+/**
+ * Broadcast tally colors, the same in every palette so on-air state reads the same whatever the
+ * company theme: red only for what's on the program, green for what's in the preview. Each comes
+ * with the text color drawn on it (at least 4.5:1).
+ */
+export const broadcastColors = {
+  program: '#E5252A',
+  onProgram: '#FFFFFF',
+  preview: '#1FBF5B',
+  onPreview: '#06140B',
+  /** Behind video, so letterboxing reads as "no picture". */
+  monitor: '#000000',
+} as const;
+
 export const palettes = {
   black: blackPalette,
   blue: bluePalette,
@@ -316,6 +370,7 @@ export const palettes = {
   aurora: auroraPalette,
   sunset: sunsetPalette,
   ocean: oceanPalette,
+  broadcast: broadcastPalette,
 } as const;
 
 export type ThemeName = keyof typeof palettes;
@@ -343,6 +398,13 @@ export interface SemanticColors {
   warning: string;
   success: string;
   info: string;
+  /** On the program / on air (broadcastColors). */
+  program: string;
+  onProgram: string;
+  /** In the preview (broadcastColors). */
+  preview: string;
+  onPreview: string;
+  monitor: string;
 }
 
 /** Role-based aliases over a palette; these are what library components style against. */
@@ -367,5 +429,10 @@ export function semanticColors(palette: TrueTimePalette): SemanticColors {
     warning: palette.warning,
     success: palette.success,
     info: palette.info,
+    program: broadcastColors.program,
+    onProgram: broadcastColors.onProgram,
+    preview: broadcastColors.preview,
+    onPreview: broadcastColors.onPreview,
+    monitor: broadcastColors.monitor,
   };
 }

@@ -29,3 +29,67 @@
   font-weight: 700;
   src: url('../assets/fonts/ClashDisplay-Bold.woff2') format('woff2');
 }
+
+/*
+ * Inter by Rasmus Andersson (https://rsms.me/inter), SIL Open Font License 1.1
+ * (assets/fonts/Inter-OFL.txt). Latin subset. Used by the `interface` typeface option.
+ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/Inter-Semibold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/Inter-Bold.woff2') format('woff2');
+}
+
+/*
+ * JetBrains Mono (https://www.jetbrains.com/lp/mono/), SIL Open Font License 1.1
+ * (assets/fonts/JetBrainsMono-OFL.txt). Latin subset. The `fontFamily.mono` token.
+ */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-Semibold.woff2') format('woff2');
+}

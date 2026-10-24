@@ -18,3 +18,10 @@ describe('Typography', () => {
     expect(screen.getByText('Hello').tagName).toBe('P');
   });
 });
+
+it('sets mono text with tabular digits', () => {
+  renderWithTheme(<Text mono>00:42:17</Text>);
+  const style = getComputedStyle(screen.getByText('00:42:17'));
+  expect(style.fontFamily).toContain('JetBrains Mono');
+  expect(style.fontVariantNumeric).toBe('tabular-nums');
+});

@@ -17,3 +17,11 @@ describe('Switch', () => {
     expect(screen.getByRole('switch', { name: 'Show Grace' })).toBeDisabled();
   });
 });
+
+it('turns the preview green when on, with tone="preview"', () => {
+  const { container } = renderWithTheme(
+    <Switch tone="preview" checked readOnly inputProps={{ 'aria-label': 'In the preview' }} />,
+  );
+  const track = container.querySelector('.MuiSwitch-track')!;
+  expect(getComputedStyle(track).backgroundColor).toBe('rgb(31, 191, 91)');
+});

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import type { SxProps, Theme } from '@mui/material/styles';
 import { MicOff } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
-import { themeColors } from '../styleUtils.js';
+import { themeColors, visuallyHidden } from '../styleUtils.js';
 
 export interface VideoTileProps {
   /** Live media; null renders the avatar placeholder. */
@@ -29,6 +29,11 @@ export interface VideoTileProps {
   /** Actions revealed on hover or keyboard focus (always visible on touch screens). */
   actions?: ReactNode;
   highlighted?: boolean;
+  /**
+   * Broadcast tally: an inset border and a PGM / PVW chip in the tally color, for a source that's
+   * on the program or in the preview. Program wins when it's both.
+   */
+  tally?: 'program' | 'preview' | null;
   /** Shown instead of the name's initials when there's no video (e.g. an icon for "offline"). */
   avatar?: ReactNode;
   /**
@@ -66,6 +71,7 @@ export function VideoTile({
   status,
   actions,
   highlighted = false,
+  tally = null,
   avatar,
   avatarFill = false,
   videoId,
@@ -106,6 +112,17 @@ export function VideoTile({
             },
             '&:hover [data-tile-actions], &:focus-within [data-tile-actions]': { opacity: 1 },
             '@media (hover: none)': { '& [data-tile-actions]': { opacity: 1 } },
+            // Drawn over the video, which would cover a border on the tile itself
+            '&::after': tally
+              ? {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 'inherit',
+                  boxShadow: `inset 0 0 0 3px ${colors[tally]}`,
+                  pointerEvents: 'none',
+                }
+              : undefined,
           };
         },
         ...(Array.isArray(sx) ? sx : [sx]),
@@ -164,7 +181,35 @@ export function VideoTile({
         </Box>
       )}
 
-      {status && <Box sx={{ position: 'absolute', top: 8, left: 8 }}>{status}</Box>}
+      {(status || tally) && (
+        <Box sx={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 0.5 }}>
+          {tally && (
+            <Box
+              component="span"
+              data-tally={tally}
+              sx={(theme) => {
+                const colors = themeColors(theme);
+                return {
+                  px: 0.75,
+                  borderRadius: '4px',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  lineHeight: '16px',
+                  color: tally === 'program' ? colors.onProgram : colors.onPreview,
+                  backgroundColor: colors[tally],
+                };
+              }}
+            >
+              <span aria-hidden>{tally === 'program' ? 'PGM' : 'PVW'}</span>
+              <Box component="span" sx={visuallyHidden}>
+                {tally === 'program' ? 'On the program' : 'In the preview'}
+              </Box>
+            </Box>
+          )}
+          {status}
+        </Box>
+      )}
 
       {showName && (
         <Box

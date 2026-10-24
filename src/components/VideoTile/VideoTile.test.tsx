@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
+import { TrueTimeThemeProvider } from '../../theme/TrueTimeThemeProvider.js';
 import { VideoTile } from './VideoTile.js';
 
 describe('VideoTile', () => {
@@ -54,4 +55,23 @@ describe('VideoTile', () => {
     expect(getComputedStyle(circle()).width).toBe('100%');
     expect(getComputedStyle(circle()).height).toBe('100%');
   });
+});
+
+it('marks a tally: program over preview, announced for screen readers', () => {
+  const { rerender } = renderWithTheme(<VideoTile stream={null} name="Ana" tally="preview" />);
+  expect(screen.getByText('PVW')).toBeInTheDocument();
+  expect(screen.getByText('In the preview')).toBeInTheDocument();
+  rerender(
+    <TrueTimeThemeProvider>
+      <VideoTile stream={null} name="Ana" tally="program" />
+    </TrueTimeThemeProvider>,
+  );
+  expect(screen.getByText('PGM')).toBeInTheDocument();
+  expect(screen.getByText('On the program')).toBeInTheDocument();
+  rerender(
+    <TrueTimeThemeProvider>
+      <VideoTile stream={null} name="Ana" />
+    </TrueTimeThemeProvider>,
+  );
+  expect(screen.queryByText('PGM')).toBeNull();
 });
