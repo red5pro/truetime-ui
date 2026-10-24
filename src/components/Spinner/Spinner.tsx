@@ -1,4 +1,5 @@
 import { keyframes, styled } from '@mui/material/styles';
+import { useUiText } from '../../text/UiText.js';
 
 export type SpinnerType = 'circle' | 'dots' | 'ring' | 'bars';
 
@@ -133,13 +134,14 @@ export function Spinner({
   size = 40,
   color = 'white',
   thickness = 4,
-  label = 'Loading',
+  label,
   className,
 }: SpinnerProps) {
+  const text = useUiText();
   return (
     <span
       role="progressbar"
-      aria-label={label}
+      aria-label={label ?? text.loading}
       className={className}
       style={{ display: 'inline-block' }}
     >

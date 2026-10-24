@@ -22,6 +22,7 @@ import {
   BarChart,
 } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
+import { useUiText } from '../../text/UiText.js';
 
 export interface Device {
   deviceId: string;
@@ -155,9 +156,10 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
   const [audioLevel, setAudioLevel] = useState<number>(0);
   const [selectedFacingMode, setSelectedFacingMode] = useState<'user' | 'environment' | null>(null);
 
+  const text = useUiText();
   const mobileCameraOptions = [
-    { id: 'facingMode:user', label: 'Front Camera', facingMode: 'user' as const },
-    { id: 'facingMode:environment', label: 'Back Camera', facingMode: 'environment' as const },
+    { id: 'facingMode:user', label: text.frontCamera, facingMode: 'user' as const },
+    { id: 'facingMode:environment', label: text.backCamera, facingMode: 'environment' as const },
   ];
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -298,7 +300,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
 
   const getSelectedDeviceName = (deviceList?: Device[], selectedId?: string): string => {
     const device = deviceList?.find((d) => d.deviceId === selectedId);
-    return device?.label || 'No device selected';
+    return device?.label || text.noDeviceSelected;
   };
 
   // Menus portal to <body>: with disablePortal, MUI's modal manager aria-hides the app root and
@@ -368,7 +370,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
       {/* Camera Selector */}
       <DeviceButton
         icon={isCameraOn ? <Videocam /> : <VideocamOff />}
-        label="Camera"
+        label={text.camera}
         fullWidth={vertical}
         selectedDevice={getSelectedDeviceName(devices.videoInputs, selectedCamera)}
         onClick={handleCameraMenuOpen}
@@ -378,7 +380,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
       {/* Microphone Selector */}
       <DeviceButton
         icon={isMicOn ? <Mic /> : <MicOff />}
-        label="Microphone"
+        label={text.microphone}
         fullWidth={vertical}
         selectedDevice={getSelectedDeviceName(devices.audioInputs, selectedMicrophone)}
         onClick={handleMicMenuOpen}
@@ -388,7 +390,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
       {/* Speaker Selector */}
       <DeviceButton
         icon={<VolumeUp />}
-        label="Speaker"
+        label={text.speaker}
         fullWidth={vertical}
         selectedDevice={getSelectedDeviceName(devices.audioOutputs, selectedSpeaker)}
         onClick={handleSpeakerMenuOpen}

@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import { VolumeDown, VolumeOff, VolumeUp } from '@mui/icons-material';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
+import { useUiText } from '../../text/UiText.js';
 
 // The theme's IconButton padding (createTrueTimeTheme), MUI's size="small" Slider thumb, and the
 // blank space at the left of the volume icons (3 of 24 units, at 20px)
@@ -38,6 +39,7 @@ export function VolumeControl({
     if (value > 0) lastAudible.current = value;
   }, [value]);
   const muted = value === 0;
+  const text = useUiText();
 
   return (
     <Box
@@ -49,7 +51,7 @@ export function VolumeControl({
     >
       <IconButton
         size="small"
-        aria-label={muted ? `Unmute ${label}` : `Mute ${label}`}
+        aria-label={muted ? text.unmute(label) : text.mute(label)}
         aria-pressed={muted}
         disabled={disabled}
         onClick={() => onChange(muted ? lastAudible.current : 0)}

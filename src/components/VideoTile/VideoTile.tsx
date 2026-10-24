@@ -4,6 +4,7 @@ import type { SxProps, Theme } from '@mui/material/styles';
 import { MicOff } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
 import { themeColors, visuallyHidden } from '../styleUtils.js';
+import { useUiText } from '../../text/UiText.js';
 
 export interface VideoTileProps {
   /** Live media; null renders the avatar placeholder. */
@@ -79,6 +80,7 @@ export function VideoTile({
   sx,
 }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const text = useUiText();
   const showVideo = Boolean(stream) && videoEnabled;
 
   useEffect(() => {
@@ -203,7 +205,7 @@ export function VideoTile({
             >
               <span aria-hidden>{tally === 'program' ? 'PGM' : 'PVW'}</span>
               <Box component="span" sx={visuallyHidden}>
-                {tally === 'program' ? 'On the program' : 'In the preview'}
+                {tally === 'program' ? text.onTheProgram : text.inThePreview}
               </Box>
             </Box>
           )}
@@ -230,7 +232,7 @@ export function VideoTile({
             lineHeight: '20px',
           })}
         >
-          {!audioEnabled && <MicOff aria-label="Microphone off" sx={{ fontSize: 16 }} />}
+          {!audioEnabled && <MicOff aria-label={text.microphoneOff} sx={{ fontSize: 16 }} />}
           <Box
             component="span"
             sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}

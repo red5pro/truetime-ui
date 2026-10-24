@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import { Send } from '@mui/icons-material';
 import { Input } from '../Input/Input.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
+import { useUiText } from '../../text/UiText.js';
 
 export interface ChatMessage {
   id: string;
@@ -59,11 +60,15 @@ export function ChatPanel({
   header,
   renderMessageActions,
   renderAuthorBadge,
-  emptyText = 'No messages yet',
-  placeholder = 'Send a message',
+  emptyText: emptyTextProp,
+  placeholder: placeholderProp,
   maxLength = 1000,
-  sendLabel = 'Send message',
+  sendLabel: sendLabelProp,
 }: ChatPanelProps) {
+  const text = useUiText();
+  const emptyText = emptyTextProp ?? text.noMessagesYet;
+  const placeholder = placeholderProp ?? text.sendAMessage;
+  const sendLabel = sendLabelProp ?? text.sendMessage;
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
@@ -103,7 +108,7 @@ export function ChatPanel({
         ref={logRef}
         role="log"
         aria-live="polite"
-        aria-label="Chat messages"
+        aria-label={text.chatMessages}
         tabIndex={0}
         sx={(theme) => ({
           flex: 1,
@@ -148,7 +153,7 @@ export function ChatPanel({
                   mb: 0.5,
                 })}
               >
-                <span>{message.mine ? 'You' : message.author}</span>
+                <span>{message.mine ? text.you : message.author}</span>
                 {renderAuthorBadge?.(message)}
                 <span>
                   {' '}

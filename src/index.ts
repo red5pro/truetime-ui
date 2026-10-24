@@ -40,6 +40,15 @@ export {
   type TrueTimeThemeProviderProps,
 } from './theme/TrueTimeThemeProvider.js';
 
+// Text the components show themselves, for apps that translate their UI
+export {
+  defaultUiText,
+  UiTextProvider,
+  useUiText,
+  type UiText,
+  type UiTextProviderProps,
+} from './text/UiText.js';
+
 // Style helpers for app-level elements that should match the components
 export { focusRingStyle, themeColors, visuallyHidden } from './components/styleUtils.js';
 

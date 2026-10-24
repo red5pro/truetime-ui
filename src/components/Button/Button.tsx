@@ -15,6 +15,7 @@ import type { ExtendButtonBase } from '@mui/material/ButtonBase';
 import type { SxProps, Theme } from '@mui/material/styles';
 import { radii } from '../../tokens/tokens.js';
 import { focusRingStyle } from '../styleUtils.js';
+import { useUiText } from '../../text/UiText.js';
 
 interface ButtonOwnProps {
   /** `pill` is the rounded CTA shape used for primary page actions. */
@@ -82,6 +83,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   ref,
 ) {
   const [holding, setHolding] = useState(false);
+  const text = useUiText();
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const latest = useRef(onHoldComplete);
   useEffect(() => {
@@ -138,7 +140,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
           onBlur?.(e);
           stop();
         },
-        'aria-description': 'Press and hold',
+        'aria-description': text.pressAndHold,
       }
     : { onPointerDown, onPointerUp, onPointerLeave, onPointerCancel, onKeyDown, onKeyUp, onBlur };
 

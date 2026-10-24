@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { createSvgIcon } from '@mui/material/utils';
 import { Input, type InputProps } from '../Input/Input.js';
 import { focusRingStyle } from '../styleUtils.js';
+import { useUiText } from '../../text/UiText.js';
 
 // Paths from @mui/icons-material Visibility / VisibilityOff, inlined to avoid the icons dependency
 const VisibilityIcon = createSvgIcon(
@@ -22,8 +23,9 @@ export interface PasswordInputProps extends Omit<InputProps, 'type'> {
 
 /** Password Input with a show/hide toggle. */
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  function PasswordInput({ showPasswordLabel = 'Show password', disabled, ...props }, ref) {
+  function PasswordInput({ showPasswordLabel, disabled, ...props }, ref) {
     const [visible, setVisible] = useState(false);
+    const text = useUiText();
 
     return (
       <Input
@@ -33,7 +35,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         endAdornment={
           <InputAdornment position="end">
             <IconButton
-              aria-label={showPasswordLabel}
+              aria-label={showPasswordLabel ?? text.showPassword}
               aria-pressed={visible}
               onClick={() => setVisible((v) => !v)}
               // Keep focus (and the caret) in the input when toggling with the mouse
