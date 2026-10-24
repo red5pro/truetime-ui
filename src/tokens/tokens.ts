@@ -1,5 +1,5 @@
 /**
- * Non-color design tokens, extracted from the TrueTime Meetings theme and components.
+ * Non-color design tokens, extracted from the TrueTime Meeting™ theme and components.
  * Values are numbers in px unless they carry a unit.
  */
 

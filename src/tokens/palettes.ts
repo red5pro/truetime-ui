@@ -1,5 +1,5 @@
 /**
- * Color palettes: the TrueTime Meetings black and blue themes, and more dark themes in the same
+ * Color palettes: the TrueTime Meeting™ black and blue themes, and more dark themes in the same
  * shape (some with a gradient behind the page).
  *
  * The numbered `themeColor*` keys are a lightness scale (0 = lightest, 99 = pure white for text)
