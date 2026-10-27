@@ -28,6 +28,8 @@ interface ButtonOwnProps {
    */
   holdMs?: number;
   onHoldComplete?: () => void;
+  /** Runs when a hold is let go (or loses focus or the pointer) before `holdMs`, e.g. to explain it. */
+  onHoldCancel?: () => void;
 }
 
 export type ButtonProps = MuiButtonProps & ButtonOwnProps;
@@ -70,6 +72,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     loading = false,
     holdMs,
     onHoldComplete,
+    onHoldCancel,
     sx,
     onPointerDown,
     onPointerUp,
@@ -85,9 +88,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const [holding, setHolding] = useState(false);
   const text = useUiText();
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const latest = useRef(onHoldComplete);
+  const latest = useRef({ onHoldComplete, onHoldCancel });
   useEffect(() => {
-    latest.current = onHoldComplete;
+    latest.current = { onHoldComplete, onHoldCancel };
   });
   useEffect(() => () => clearTimeout(timer.current), []);
 
@@ -98,13 +101,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     timer.current = setTimeout(() => {
       timer.current = undefined;
       setHolding(false);
-      latest.current?.();
+      latest.current.onHoldComplete?.();
     }, holdMs);
   };
   const stop = () => {
+    if (timer.current === undefined) return;
     clearTimeout(timer.current);
     timer.current = undefined;
     setHolding(false);
+    latest.current.onHoldCancel?.();
   };
 
   const holdHandlers = hold

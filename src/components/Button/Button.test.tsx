@@ -88,4 +88,25 @@ describe('Button with holdMs', () => {
     act(() => vi.advanceTimersByTime(600));
     expect(onHoldComplete).toHaveBeenCalledOnce();
   });
+
+  it('reports a hold let go too early, but not one held long enough', () => {
+    const onHoldCancel = vi.fn();
+    renderWithTheme(
+      <Button holdMs={600} onHoldCancel={onHoldCancel}>
+        Go Live
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Go Live' });
+    fireEvent.pointerDown(button, { button: 0 });
+    act(() => vi.advanceTimersByTime(100));
+    fireEvent.pointerUp(button);
+    expect(onHoldCancel).toHaveBeenCalledOnce();
+
+    // Leaving and letting go without a hold, or after a full one, isn't a cancel
+    fireEvent.pointerLeave(button);
+    fireEvent.pointerDown(button, { button: 0 });
+    act(() => vi.advanceTimersByTime(600));
+    fireEvent.pointerUp(button);
+    expect(onHoldCancel).toHaveBeenCalledOnce();
+  });
 });
