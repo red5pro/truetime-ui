@@ -63,6 +63,11 @@ export {
 export { Button, type ButtonProps } from './components/Button/Button.js';
 export { Card, type CardProps } from './components/Card/Card.js';
 export {
+  CaptionsOverlay,
+  type Caption,
+  type CaptionsOverlayProps,
+} from './components/CaptionsOverlay/CaptionsOverlay.js';
+export {
   ChatPanel,
   type ChatMessage,
   type ChatPanelProps,
