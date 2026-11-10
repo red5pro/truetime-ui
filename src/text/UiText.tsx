@@ -29,6 +29,8 @@ export interface UiText {
   frontCamera: string;
   backCamera: string;
   noDeviceSelected: string;
+  /** CaptionsOverlay's live region. */
+  captions: string;
 }
 
 export const defaultUiText: UiText = {
@@ -51,6 +53,7 @@ export const defaultUiText: UiText = {
   frontCamera: 'Front Camera',
   backCamera: 'Back Camera',
   noDeviceSelected: 'No device selected',
+  captions: 'Captions',
 };
 
 const UiTextContext = createContext<UiText>(defaultUiText);
