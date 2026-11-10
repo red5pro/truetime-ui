@@ -61,4 +61,11 @@ describe('DeviceSelector', () => {
     expect(camera).toHaveClass('MuiButton-fullWidth');
     expect(camera.parentElement).toHaveStyle({ flexDirection: 'column' });
   });
+
+  it('shares the full width between the pickers when fullWidth', () => {
+    renderWithTheme(<DeviceSelector devices={devices} selectedCamera="cam1" fullWidth />);
+    const camera = screen.getByRole('button', { name: /FaceTime HD/ });
+    expect(camera.parentElement).toHaveStyle({ flexDirection: 'row', width: '100%' });
+    expect(camera).toHaveStyle({ flexGrow: '1', minWidth: '0' });
+  });
 });
