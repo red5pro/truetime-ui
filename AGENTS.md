@@ -8,8 +8,10 @@ It is consumed by sibling checkouts:
 - `../truetime-studio-web`
 - `../red5-truetime-meetings`
 
-Both install it from GitHub (`"truetime-ui": "github:red5pro/truetime-ui"`); npm runs `prepare`
-to build `dist/` on install, since `dist/` isn't committed.
+Both install it from GitHub at the current epic's branch
+(`"truetime-ui": "github:red5pro/truetime-ui#epic/BOSTON"`), so library changes for an epic go on
+its `epic/<NAME>` branch. npm runs `prepare` to build `dist/` on install, since `dist/` isn't
+committed.
 See [README.md](README.md) for the full export table.
 
 ## This repo is the single source of UI

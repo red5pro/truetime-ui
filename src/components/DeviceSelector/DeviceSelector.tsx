@@ -53,6 +53,11 @@ export interface DeviceSelectorProps {
    * `vertical`: stacked at full width, for narrow places such as a settings popup.
    */
   orientation?: 'horizontal' | 'vertical';
+  /**
+   * Horizontal only: span the parent's width and share it between the pickers, wrapping on narrow
+   * screens, so the row lines up with what is above or below it (e.g. a video preview).
+   */
+  fullWidth?: boolean;
 }
 
 interface DeviceButtonProps {
@@ -62,6 +67,8 @@ interface DeviceButtonProps {
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   fullWidth?: boolean;
+  /** Share the row's width with the other pickers instead of sizing to the window */
+  grow?: boolean;
 }
 
 const DeviceButton: React.FC<DeviceButtonProps> = ({
@@ -70,6 +77,7 @@ const DeviceButton: React.FC<DeviceButtonProps> = ({
   onClick,
   disabled = false,
   fullWidth = false,
+  grow = false,
 }) => (
   <Button
     variant="outlined"
@@ -79,10 +87,12 @@ const DeviceButton: React.FC<DeviceButtonProps> = ({
     sx={{
       ...(fullWidth
         ? { minWidth: 0 }
-        : {
-            minWidth: { xs: '20vw', sm: '15vw', md: '12vw', lg: '10vw' },
-            maxWidth: { xs: '25vw', sm: '18vw', md: '15vw', lg: '13vw' },
-          }),
+        : grow
+          ? { flex: '1 1 160px', minWidth: 0 }
+          : {
+              minWidth: { xs: '20vw', sm: '15vw', md: '12vw', lg: '10vw' },
+              maxWidth: { xs: '25vw', sm: '18vw', md: '15vw', lg: '13vw' },
+            }),
       justifyContent: 'space-between',
       textTransform: 'none',
       color: 'white',
@@ -148,8 +158,10 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
   isCameraOn = true,
   isMicOn = true,
   orientation = 'horizontal',
+  fullWidth = false,
 }) => {
   const vertical = orientation === 'vertical';
+  const grow = !vertical && fullWidth;
   const [cameraMenuAnchor, setCameraMenuAnchor] = useState<HTMLElement | null>(null);
   const [micMenuAnchor, setMicMenuAnchor] = useState<HTMLElement | null>(null);
   const [speakerMenuAnchor, setSpeakerMenuAnchor] = useState<HTMLElement | null>(null);
@@ -362,7 +374,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         backdropFilter: 'blur(20px)',
         borderRadius: 2,
         border: `1px solid ${alpha('#fff', 0.1)}`,
-        width: vertical ? '100%' : { xs: '100%', sm: 'fit-content' },
+        width: vertical || grow ? '100%' : { xs: '100%', sm: 'fit-content' },
         maxWidth: '100%',
         flexWrap: 'wrap',
       }}
@@ -372,6 +384,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         icon={isCameraOn ? <Videocam /> : <VideocamOff />}
         label={text.camera}
         fullWidth={vertical}
+        grow={grow}
         selectedDevice={getSelectedDeviceName(devices.videoInputs, selectedCamera)}
         onClick={handleCameraMenuOpen}
         disabled={devices.videoInputs?.length === 0}
@@ -382,6 +395,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         icon={isMicOn ? <Mic /> : <MicOff />}
         label={text.microphone}
         fullWidth={vertical}
+        grow={grow}
         selectedDevice={getSelectedDeviceName(devices.audioInputs, selectedMicrophone)}
         onClick={handleMicMenuOpen}
         disabled={devices.audioInputs?.length === 0}
@@ -392,6 +406,7 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         icon={<VolumeUp />}
         label={text.speaker}
         fullWidth={vertical}
+        grow={grow}
         selectedDevice={getSelectedDeviceName(devices.audioOutputs, selectedSpeaker)}
         onClick={handleSpeakerMenuOpen}
         disabled={devices.audioOutputs?.length === 0}
