@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
 import { AudioLevelDots } from '../AudioLevelDots/AudioLevelDots.js';
 import { SplitToolbarButton } from './SplitToolbarButton.js';
@@ -58,5 +58,36 @@ describe('SplitToolbarButton', () => {
       />,
     );
     expect(container.querySelector('[data-active]')).not.toBeInTheDocument();
+  });
+});
+
+describe('SplitToolbarButton hover', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('reports a mouse resting on the options segment, but not a touch or a quick pass', () => {
+    vi.useFakeTimers();
+    const onOptionsHover = vi.fn();
+    renderWithTheme(
+      <SplitToolbarButton
+        icon={<svg />}
+        label="Turn off camera"
+        optionsLabel="Camera options"
+        onOptionsHover={onOptionsHover}
+      />,
+    );
+    const options = screen.getByRole('button', { name: 'Camera options' });
+
+    fireEvent.pointerEnter(options, { pointerType: 'touch' });
+    act(() => vi.advanceTimersByTime(300));
+    expect(onOptionsHover).not.toHaveBeenCalled();
+
+    fireEvent.pointerEnter(options, { pointerType: 'mouse' });
+    fireEvent.pointerLeave(options, { pointerType: 'mouse' });
+    act(() => vi.advanceTimersByTime(300));
+    expect(onOptionsHover).not.toHaveBeenCalled();
+
+    fireEvent.pointerEnter(options, { pointerType: 'mouse' });
+    act(() => vi.advanceTimersByTime(300));
+    expect(onOptionsHover).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
 import { ControlBar } from './ControlBar.js';
 
@@ -28,5 +28,29 @@ describe('ControlBar', () => {
     fireEvent.keyDown(screen.getByRole('button', { name: 'Blur' }), { key: 'Escape' });
     expect(tray).toBeInTheDocument();
     expect(onTrayClose).toHaveBeenCalled();
+  });
+});
+
+describe('ControlBar hover end', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('reports the mouse leaving after a moment, unless it comes back', () => {
+    vi.useFakeTimers();
+    const onHoverEnd = vi.fn();
+    renderWithTheme(
+      <ControlBar label="Call controls" onHoverEnd={onHoverEnd}>
+        <button>Mute</button>
+      </ControlBar>,
+    );
+    const bar = screen.getByRole('toolbar').parentElement!;
+
+    fireEvent.pointerLeave(bar, { pointerType: 'mouse' });
+    fireEvent.pointerEnter(bar, { pointerType: 'mouse' });
+    act(() => vi.advanceTimersByTime(500));
+    expect(onHoverEnd).not.toHaveBeenCalled();
+
+    fireEvent.pointerLeave(bar, { pointerType: 'mouse' });
+    act(() => vi.advanceTimersByTime(500));
+    expect(onHoverEnd).toHaveBeenCalledTimes(1);
   });
 });

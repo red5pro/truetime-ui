@@ -1,4 +1,4 @@
-import type { MouseEvent, ReactNode } from 'react';
+import { useEffect, useRef, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Tooltip from '@mui/material/Tooltip';
@@ -22,6 +22,11 @@ export interface SplitToolbarButtonProps {
   /** What the options segment opens is showing (a tray or menu). */
   optionsOpen?: boolean;
   onOptionsClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  /**
+   * The mouse rested on the options segment, to open what it opens without a click. Not called for
+   * touch or pen, which use the click.
+   */
+  onOptionsHover?: () => void;
   /** id of what the options segment opens, for `aria-controls`. */
   optionsControls?: string;
   optionsDisabled?: boolean;
@@ -37,6 +42,8 @@ export interface SplitToolbarButtonProps {
  * A device toggle with an options segment on its left (Meet-style): the segment opens a tray or menu
  * of device options, the toggle turns the device on or off.
  */
+const OPTIONS_HOVER_DELAY_MS = 150;
+
 export function SplitToolbarButton({
   icon,
   label,
@@ -46,12 +53,22 @@ export function SplitToolbarButton({
   optionsLabel,
   optionsOpen = false,
   onOptionsClick,
+  onOptionsHover,
   optionsControls,
   optionsDisabled,
   idleIndicator,
   id,
 }: SplitToolbarButtonProps) {
   const showIdle = idleIndicator != null && !optionsOpen;
+  const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(hoverTimer.current), []);
+
+  const handleOptionsPointerEnter = (event: PointerEvent) => {
+    if (!onOptionsHover || optionsDisabled || event.pointerType !== 'mouse') return;
+    clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(onOptionsHover, OPTIONS_HOVER_DELAY_MS);
+  };
+  const cancelOptionsHover = () => clearTimeout(hoverTimer.current);
   return (
     <Box
       sx={(theme) => {
@@ -78,7 +95,13 @@ export function SplitToolbarButton({
           aria-expanded={optionsOpen}
           aria-controls={optionsControls}
           disabled={optionsDisabled}
-          onClick={onOptionsClick}
+          onClick={(event) => {
+            // A click before the hover delay ran out shouldn't be followed by the hover
+            cancelOptionsHover();
+            onOptionsClick?.(event);
+          }}
+          onPointerEnter={handleOptionsPointerEnter}
+          onPointerLeave={cancelOptionsHover}
           sx={(theme) => {
             const segment = segmentColors(theme, tone);
             return {
