@@ -101,3 +101,57 @@ describe('ChatPanel', () => {
     expect(screen.getByRole('log')).toHaveTextContent(/Ada · \d/);
   });
 });
+
+describe('ChatPanel attachments', () => {
+  it('shows attachments under the text, without an empty bubble for file-only messages', () => {
+    renderWithTheme(
+      <ChatPanel
+        messages={[
+          {
+            id: 'f',
+            author: 'Ada',
+            text: '',
+            timestamp: '2026-10-13T10:00:00Z',
+            attachments: <a href="https://example.com/a.pdf">a.pdf</a>,
+          },
+          { id: 't', author: 'Ada', text: 'see https://x.y', timestamp: '2026-10-13T10:01:00Z' },
+        ]}
+        onSend={() => {}}
+        renderText={(text) => <strong>{text}</strong>}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'a.pdf' })).toBeInTheDocument();
+    expect(screen.getByText('see https://x.y').tagName).toBe('STRONG');
+  });
+
+  it('puts controls around the composer and can send without text', () => {
+    const onSend = vi.fn();
+    renderWithTheme(
+      <ChatPanel
+        messages={[]}
+        onSend={onSend}
+        composerStart={<button type="button">Attach</button>}
+        composerAbove={<span>report.pdf</span>}
+        canSendWithoutText
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Attach' })).toBeInTheDocument();
+    expect(screen.getByText('report.pdf')).toBeInTheDocument();
+    const send = screen.getByRole('button', { name: 'Send message' });
+    expect(send).toBeEnabled();
+    fireEvent.click(send);
+    expect(onSend).toHaveBeenCalledWith('');
+  });
+});
+
+describe('ChatPanel timestamps', () => {
+  it('shows a time that is already formatted as given', () => {
+    renderWithTheme(
+      <ChatPanel
+        messages={[{ id: '1', author: 'Ada', text: 'Hi', timestamp: '14:05' }]}
+        onSend={() => {}}
+      />,
+    );
+    expect(screen.getByRole('log')).toHaveTextContent('Ada · 14:05');
+  });
+});
