@@ -27,6 +27,7 @@ export {
   focusRing,
   shadows,
   motion,
+  controlBar,
   disabledOpacity,
   monoText,
   type Typeface,
@@ -123,3 +124,22 @@ export {
   TruncatedText,
   type TruncatedTextProps,
 } from './components/TruncatedText/TruncatedText.js';
+export {
+  AudioLevelDots,
+  type AudioLevelDotsProps,
+} from './components/AudioLevelDots/AudioLevelDots.js';
+export { ControlBar, type ControlBarProps } from './components/ControlBar/ControlBar.js';
+export {
+  DeviceMenuButton,
+  type DeviceMenuButtonProps,
+  type DeviceOption,
+} from './components/DeviceMenuButton/DeviceMenuButton.js';
+export {
+  SplitToolbarButton,
+  type SplitToolbarButtonProps,
+} from './components/SplitToolbarButton/SplitToolbarButton.js';
+export {
+  ToolbarButton,
+  type ToolbarButtonProps,
+} from './components/ToolbarButton/ToolbarButton.js';
+export { toolbarToneColors, type ToolbarTone } from './components/ToolbarButton/toolbarTones.js';

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderWithTheme } from '../../test/render.js';
 import { DeviceSelector } from './DeviceSelector.js';
 
@@ -23,7 +23,7 @@ describe('DeviceSelector', () => {
       />,
     );
     fireEvent.click(screen.getByRole('button', { name: /FaceTime HD/ }));
-    fireEvent.click(screen.getByRole('menuitem', { name: 'USB Camera' }));
+    fireEvent.click(screen.getByRole('menuitemradio', { name: 'USB Camera' }));
     expect(onCameraChange).toHaveBeenLastCalledWith('cam2');
   });
 
@@ -41,7 +41,7 @@ describe('DeviceSelector', () => {
       />,
     );
     fireEvent.click(screen.getByRole('button', { name: /MacBook Pro Microphone/ }));
-    const item = screen.getByRole('menuitem', { name: long });
+    const item = screen.getByRole('menuitemradio', { name: long });
     expect(item).toHaveAttribute('title', long);
   });
 
@@ -53,12 +53,30 @@ describe('DeviceSelector', () => {
     expect(screen.getByRole('button', { name: /FaceTime HD/ })).toBeEnabled();
   });
 
+  it('opens on hover only when asked', () => {
+    vi.useFakeTimers();
+    renderWithTheme(
+      <DeviceSelector
+        devices={devices}
+        selectedCamera="cam1"
+        selectedMicrophone="mic1"
+        openOnHover
+      />,
+    );
+    fireEvent.pointerEnter(screen.getByRole('button', { name: /FaceTime HD/ }), {
+      pointerType: 'mouse',
+    });
+    act(() => vi.advanceTimersByTime(200));
+    expect(screen.getByRole('menuitemradio', { name: 'USB Camera' })).toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
   it('stacks the pickers at full width when vertical', () => {
     renderWithTheme(
       <DeviceSelector devices={devices} selectedCamera="cam1" orientation="vertical" />,
     );
     const camera = screen.getByRole('button', { name: /FaceTime HD/ });
-    expect(camera).toHaveClass('MuiButton-fullWidth');
+    expect(camera).toHaveStyle({ width: '100%' });
     expect(camera.parentElement).toHaveStyle({ flexDirection: 'column' });
   });
 

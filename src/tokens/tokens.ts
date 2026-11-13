@@ -91,3 +91,25 @@ export const motion = {
 } as const;
 
 export const disabledOpacity = 0.5;
+
+/** Meeting control bar: sizes of its pill buttons, picker chips and the bar itself. */
+export const controlBar = {
+  /** Toolbar buttons (mic, camera, share, …) */
+  buttonHeight: 52,
+  /** Toolbar buttons on small screens */
+  compactButtonHeight: 44,
+  /** Default and minimum width of a toolbar button */
+  buttonWidth: 56,
+  /** Narrow buttons such as "more options" */
+  narrowWidth: 36,
+  /** Wide buttons such as "leave call" */
+  wideWidth: 76,
+  /** The options segment of a split button (chevron or level dots) */
+  segmentWidth: 40,
+  /** Chips and pickers in the bar's tray */
+  chipHeight: 40,
+  /** Inner padding of the bar (52 + 2 × 10 = a 72px bar) */
+  padding: 10,
+  /** Corner radius of the bar */
+  radius: 28,
+} as const;
