@@ -127,3 +127,8 @@ Add `src/components/<Name>/<Name>.tsx` with a test next to it. Wrap the MUI comp
 `themeColors(theme)` / tokens rather than hex values, keep business logic out, and export the
 component and its props type from `src/index.ts`. Avoid global theme overrides unless every app
 should change.
+
+## License
+
+Licensed under the Infrared5 example code license; see [LICENSE](LICENSE). The software may only be used with Red5 Pro, which has its own
+[end user license agreement](https://account.red5.net/assets/LICENSE.txt).
