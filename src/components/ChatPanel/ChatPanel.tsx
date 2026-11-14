@@ -12,6 +12,7 @@ import { Send } from '@mui/icons-material';
 import { Input } from '../Input/Input.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 import { useUiText } from '../../text/UiText.js';
+import { enterAnimation } from '../../motion/motion.js';
 
 export interface ChatMessage {
   id: string;
@@ -92,6 +93,8 @@ export function ChatPanel({
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
+  // Messages already there when the panel opened appear as they are; only new ones animate in
+  const [shownOnOpen] = useState(() => new Set(messages.map((message) => message.id)));
 
   useEffect(() => {
     const log = logRef.current;
@@ -160,6 +163,7 @@ export function ChatPanel({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: message.mine ? 'flex-end' : 'flex-start',
+                ...(!shownOnOpen.has(message.id) && enterAnimation({ duration: 'base' })),
               }}
             >
               <Box

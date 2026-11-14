@@ -4,6 +4,7 @@ import type { SxProps, Theme } from '@mui/material/styles';
 import { MicOff } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
 import { themeColors, visuallyHidden } from '../styleUtils.js';
+import { enterAnimation, transition } from '../../motion/motion.js';
 import { useUiText } from '../../text/UiText.js';
 
 export interface VideoTileProps {
@@ -103,28 +104,30 @@ export function VideoTile({
             overflow: 'hidden',
             borderRadius: `${radii.control}px`,
             backgroundColor: colors.surfaceRaised,
-            outline: highlighted ? `2px solid ${colors.text}` : 'none',
+            // Always drawn, so turning it on and off fades instead of snapping
+            outline: `2px solid ${highlighted ? colors.text : 'transparent'}`,
             outlineOffset: -2,
+            transition: transition('outline-color'),
             ...(fill
               ? { width: '100%', height: '100%' }
               : { width: '100%', aspectRatio: '16 / 9' }),
             '& [data-tile-actions]': {
               opacity: 0,
-              transition: 'opacity 0.15s ease-in-out',
+              transition: transition('opacity', { duration: 'fast' }),
             },
             '&:hover [data-tile-actions], &:focus-within [data-tile-actions]': { opacity: 1 },
             '@media (hover: none)': { '& [data-tile-actions]': { opacity: 1 } },
             // Drawn over the video, which would cover a border on the tile itself
-            '&::after': tally
-              ? {
-                  content: '""',
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 'inherit',
-                  boxShadow: `inset 0 0 0 3px ${colors[tally]}`,
-                  pointerEvents: 'none',
-                }
-              : undefined,
+            // Always there (transparent without a tally) so the ring fades between states
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 0,
+              borderRadius: 'inherit',
+              boxShadow: `inset 0 0 0 3px ${tally ? colors[tally] : 'transparent'}`,
+              transition: transition('box-shadow'),
+              pointerEvents: 'none',
+            },
           };
         },
         ...(Array.isArray(sx) ? sx : [sx]),
@@ -144,11 +147,21 @@ export function VideoTile({
           objectFit: fit,
           transform: mirrored ? 'scaleX(-1)' : 'none',
           backgroundColor: '#000',
+          // Camera turning on: the picture fades in over the avatar
+          ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
         }}
       />
 
       {!showVideo && (
-        <Box sx={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            display: 'grid',
+            placeItems: 'center',
+            ...enterAnimation({ variant: 'fade' }),
+          }}
+        >
           <Box
             aria-hidden
             sx={(theme) => ({

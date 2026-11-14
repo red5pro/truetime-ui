@@ -86,7 +86,40 @@ export const shadows = {
     '0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)',
 } as const;
 
+/**
+ * Motion: durations (ms) and easing curves shared by the theme's MUI transitions, the components
+ * and the helpers in `truetime-ui`'s motion exports (`transition`, `enterAnimation`, `Reveal`).
+ */
 export const motion = {
+  duration: {
+    /** Press feedback, colour changes on small controls */
+    instant: 100,
+    /** Hover states, tooltips, fading overlays in and out */
+    fast: 150,
+    /** Most state changes */
+    base: 200,
+    /** Elements arriving: dialogs, panels, toasts, list items */
+    enter: 240,
+    /** Elements leaving; quicker than arriving so the UI never feels like it lags */
+    exit: 180,
+    /** Large surfaces travelling across the screen: drawers, pages */
+    slow: 320,
+  },
+  easing: {
+    /** Moves that start and end on screen */
+    standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    /** Arriving: fast start, long gentle settle */
+    decelerate: 'cubic-bezier(0.2, 0, 0, 1)',
+    /** Leaving: gentle start, quick finish */
+    accelerate: 'cubic-bezier(0.4, 0, 1, 1)',
+    /** A small overshoot for playful feedback (reactions, badges popping in) */
+    spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
+  /** How far elements travel when they fade in (px) */
+  distance: 8,
+  /** Delay between items of a staggered list (ms) */
+  stagger: 40,
+  /** @deprecated Transitions every property; use `transition([...])` with the properties that change. */
   standard: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
 } as const;
 

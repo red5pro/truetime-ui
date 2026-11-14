@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import { radii } from '../../tokens/tokens.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
+import { reducedMotion, transition } from '../../motion/motion.js';
 
 export interface OptionTileProps extends Omit<ButtonBaseProps, 'children'> {
   /** Picture of the option, filling a 16:9 swatch (an image, a gradient box, an icon…). */
@@ -36,7 +37,16 @@ export function OptionTile({ preview, label, selected = false, sx, ...props }: O
             outlineOffset: -1,
             textAlign: 'left',
             ...theme.typography.caption,
+            transition: transition(['background-color', 'color', 'outline-color']),
             '&:hover': { backgroundColor: colors.surfaceHover, color: colors.text },
+            // The picture leans in a little under the pointer
+            '& [data-option-preview] > *': {
+              transition: transition('transform', { duration: 'slow' }),
+            },
+            '@media (hover: hover)': {
+              '&:hover:not(.Mui-disabled) [data-option-preview] > *': { transform: 'scale(1.04)' },
+            },
+            [reducedMotion]: { '&:hover [data-option-preview] > *': { transform: 'none' } },
             '&.Mui-focusVisible': focusRingStyle(theme),
             '&.Mui-disabled': { opacity: 0.5 },
           };
@@ -46,6 +56,7 @@ export function OptionTile({ preview, label, selected = false, sx, ...props }: O
     >
       <Box
         aria-hidden
+        data-option-preview
         sx={(theme) => ({
           position: 'relative',
           aspectRatio: '16 / 9',
