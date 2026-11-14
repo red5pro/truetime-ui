@@ -4,6 +4,7 @@ import { alpha } from '@mui/material/styles';
 import type { ReactNode } from 'react';
 import { mixColors } from '../../tokens/contrast.js';
 import { radii, shadows } from '../../tokens/tokens.js';
+import { enterAnimation } from '../../motion/motion.js';
 import { themeColors } from '../styleUtils.js';
 
 export interface AlertProps extends Omit<MuiAlertProps, 'variant' | 'title'> {
@@ -45,7 +46,11 @@ export function Alert({
             backgroundColor: floating
               ? mixColors(colors.surfaceRaised, accent, 0.14)
               : alpha(accent, 0.1),
-            ...(floating && { borderColor: alpha(accent, 0.8), boxShadow: shadows.overlay }),
+            ...(floating && {
+              borderColor: alpha(accent, 0.8),
+              boxShadow: shadows.overlay,
+              ...enterAnimation({ variant: 'down' }),
+            }),
             color: colors.text,
             fontSize: 14,
             '& .MuiAlert-icon': { color: accent },

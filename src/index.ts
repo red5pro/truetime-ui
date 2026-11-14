@@ -27,11 +27,31 @@ export {
   focusRing,
   shadows,
   motion,
+  controlBar,
   disabledOpacity,
   monoText,
   type Typeface,
 } from './tokens/tokens.js';
 export { contrastRatio, looksLikeTally, readableOn, relativeLuminance } from './tokens/contrast.js';
+
+// Motion: transitions and enter animations on the motion tokens
+export {
+  transition,
+  enterAnimation,
+  pressFeedback,
+  reducedMotion,
+  enterKeyframes,
+  fadeIn,
+  fadeInUp,
+  fadeInDown,
+  fadeInLeft,
+  scaleIn,
+  popIn,
+  pulse,
+  type EnterVariant,
+  type EnterAnimationOptions,
+  type TransitionOptions,
+} from './motion/motion.js';
 
 // Theme
 export { createTrueTimeTheme, type TrueTimeThemeExtension } from './theme/createTrueTimeTheme.js';
@@ -61,6 +81,7 @@ export {
   type AudioMeterProps,
 } from './components/AudioMeter/AudioMeter.js';
 export { Button, type ButtonProps } from './components/Button/Button.js';
+export { Reveal, type RevealProps } from './components/Reveal/Reveal.js';
 export { Card, type CardProps } from './components/Card/Card.js';
 export {
   CaptionsOverlay,
@@ -111,6 +132,7 @@ export {
   type TextTone,
 } from './components/Typography/Typography.js';
 export { Switch, type SwitchProps } from './components/Switch/Switch.js';
+export { Slider, type SliderProps } from './components/Slider/Slider.js';
 export { Select, type SelectOption, type SelectProps } from './components/Select/Select.js';
 export { RailButton, type RailButtonProps } from './components/RailButton/RailButton.js';
 export { OptionTile, type OptionTileProps } from './components/OptionTile/OptionTile.js';
@@ -123,3 +145,22 @@ export {
   TruncatedText,
   type TruncatedTextProps,
 } from './components/TruncatedText/TruncatedText.js';
+export {
+  AudioLevelDots,
+  type AudioLevelDotsProps,
+} from './components/AudioLevelDots/AudioLevelDots.js';
+export { ControlBar, type ControlBarProps } from './components/ControlBar/ControlBar.js';
+export {
+  DeviceMenuButton,
+  type DeviceMenuButtonProps,
+  type DeviceOption,
+} from './components/DeviceMenuButton/DeviceMenuButton.js';
+export {
+  SplitToolbarButton,
+  type SplitToolbarButtonProps,
+} from './components/SplitToolbarButton/SplitToolbarButton.js';
+export {
+  ToolbarButton,
+  type ToolbarButtonProps,
+} from './components/ToolbarButton/ToolbarButton.js';
+export { toolbarToneColors, type ToolbarTone } from './components/ToolbarButton/toolbarTones.js';

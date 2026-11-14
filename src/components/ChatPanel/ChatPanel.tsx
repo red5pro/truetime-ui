@@ -12,16 +12,23 @@ import { Send } from '@mui/icons-material';
 import { Input } from '../Input/Input.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 import { useUiText } from '../../text/UiText.js';
+import { enterAnimation } from '../../motion/motion.js';
 
 export interface ChatMessage {
   id: string;
   author: string;
   text: string;
+  /** When it was sent; a string that isn't a date (e.g. "14:05") is shown as given. */
   timestamp: Date | string | number;
   /** Sent by the current user. */
   mine?: boolean;
   /** Marked for review (e.g. reported); outlined and announced as flagged. */
   flagged?: boolean;
+  /**
+   * Shown under the text, e.g. files sent with the message. A message with attachments and no text
+   * shows no empty bubble.
+   */
+  attachments?: ReactNode;
 }
 
 export interface ChatPanelProps {
@@ -43,13 +50,23 @@ export interface ChatPanelProps {
   placeholder?: string;
   maxLength?: number;
   sendLabel?: string;
+  /** How a message's text is shown, e.g. with links made clickable. Plain text by default. */
+  renderText?: (text: string, message: ChatMessage) => ReactNode;
+  /** Before the text field, e.g. a button to attach files. */
+  composerStart?: ReactNode;
+  /** Above the text field, e.g. the files about to be sent. */
+  composerAbove?: ReactNode;
+  /** Allow sending with an empty text field, e.g. when files are attached. */
+  canSendWithoutText?: boolean;
 }
 
 const timeFormat = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
 
+/** A date as hours and minutes; a string that isn't a date is taken as already formatted. */
 function formatTime(timestamp: ChatMessage['timestamp']) {
   const date = new Date(timestamp);
-  return Number.isNaN(date.getTime()) ? '' : timeFormat.format(date);
+  if (!Number.isNaN(date.getTime())) return timeFormat.format(date);
+  return typeof timestamp === 'string' ? timestamp : '';
 }
 
 /** Message log with a composer. Enter sends, Shift+Enter adds a line break. */
@@ -64,6 +81,10 @@ export function ChatPanel({
   placeholder: placeholderProp,
   maxLength = 1000,
   sendLabel: sendLabelProp,
+  renderText,
+  composerStart,
+  composerAbove,
+  canSendWithoutText = false,
 }: ChatPanelProps) {
   const text = useUiText();
   const emptyText = emptyTextProp ?? text.noMessagesYet;
@@ -72,6 +93,8 @@ export function ChatPanel({
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
+  // Messages already there when the panel opened appear as they are; only new ones animate in
+  const [shownOnOpen] = useState(() => new Set(messages.map((message) => message.id)));
 
   useEffect(() => {
     const log = logRef.current;
@@ -81,7 +104,7 @@ export function ChatPanel({
   const send = (event?: FormEvent) => {
     event?.preventDefault();
     const text = draft.trim();
-    if (!text || sending) return;
+    if ((!text && !canSendWithoutText) || sending) return;
     const result = onSend(text);
     if (!(result instanceof Promise)) {
       if (result !== false) setDraft('');
@@ -140,6 +163,7 @@ export function ChatPanel({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: message.mine ? 'flex-end' : 'flex-start',
+                ...(!shownOnOpen.has(message.id) && enterAnimation({ duration: 'base' })),
               }}
             >
               <Box
@@ -167,25 +191,41 @@ export function ChatPanel({
                 </span>
                 {renderMessageActions?.(message)}
               </Box>
-              <Box
-                sx={(theme) => ({
-                  maxWidth: '85%',
-                  px: 1.5,
-                  py: 1,
-                  borderRadius: '12px',
-                  fontSize: 14,
-                  lineHeight: 1.4,
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'anywhere',
-                  color: themeColors(theme).text,
-                  backgroundColor: message.mine
-                    ? themeColors(theme).secondary
-                    : themeColors(theme).surfaceRaised,
-                  outline: message.flagged ? `1px solid ${themeColors(theme).warning}` : 'none',
-                })}
-              >
-                {message.text}
-              </Box>
+              {message.text && (
+                <Box
+                  sx={(theme) => ({
+                    maxWidth: '85%',
+                    px: 1.5,
+                    py: 1,
+                    borderRadius: '12px',
+                    fontSize: 14,
+                    lineHeight: 1.4,
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'anywhere',
+                    color: themeColors(theme).text,
+                    backgroundColor: message.mine
+                      ? themeColors(theme).secondary
+                      : themeColors(theme).surfaceRaised,
+                    outline: message.flagged ? `1px solid ${themeColors(theme).warning}` : 'none',
+                  })}
+                >
+                  {renderText ? renderText(message.text, message) : message.text}
+                </Box>
+              )}
+              {message.attachments && (
+                <Box
+                  sx={{
+                    maxWidth: '85%',
+                    mt: message.text ? 0.75 : 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: message.mine ? 'flex-end' : 'flex-start',
+                    gap: 0.75,
+                  }}
+                >
+                  {message.attachments}
+                </Box>
+              )}
             </Box>
           ))
         )}
@@ -204,33 +244,33 @@ export function ChatPanel({
             {unavailable}
           </Box>
         ) : (
-          <Box
-            component="form"
-            onSubmit={send}
-            sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}
-          >
-            <Input
-              multiline
-              maxRows={4}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              inputProps={{ 'aria-label': placeholder, maxLength }}
-              sx={{ '& textarea': { padding: '10px 14px' }, padding: 0 }}
-            />
-            <IconButton
-              type="submit"
-              aria-label={sendLabel}
-              disabled={!draft.trim() || sending}
-              sx={(theme) => ({
-                color: themeColors(theme).text,
-                '&:hover': { backgroundColor: themeColors(theme).surfaceHover },
-                '&.Mui-focusVisible': focusRingStyle(theme),
-              })}
-            >
-              <Send />
-            </IconButton>
+          <Box component="form" onSubmit={send}>
+            {composerAbove}
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
+              {composerStart}
+              <Input
+                multiline
+                maxRows={4}
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                inputProps={{ 'aria-label': placeholder, maxLength }}
+                sx={{ '& textarea': { padding: '10px 14px' }, padding: 0 }}
+              />
+              <IconButton
+                type="submit"
+                aria-label={sendLabel}
+                disabled={(!draft.trim() && !canSendWithoutText) || sending}
+                sx={(theme) => ({
+                  color: themeColors(theme).text,
+                  '&:hover': { backgroundColor: themeColors(theme).surfaceHover },
+                  '&.Mui-focusVisible': focusRingStyle(theme),
+                })}
+              >
+                <Send />
+              </IconButton>
+            </Box>
           </Box>
         )}
       </Box>

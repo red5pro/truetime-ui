@@ -1,27 +1,7 @@
-import React, { useState, useCallback, useEffect, useRef, ReactNode, MouseEvent } from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  alpha,
-  LinearProgress,
-} from '@mui/material';
-import {
-  Videocam,
-  VideocamOff,
-  Mic,
-  MicOff,
-  VolumeUp,
-  Check,
-  ExpandMore,
-  BarChart,
-} from '@mui/icons-material';
-import { radii } from '../../tokens/tokens.js';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Box, Typography, LinearProgress, alpha } from '@mui/material';
+import { Videocam, VideocamOff, Mic, MicOff, VolumeUp } from '@mui/icons-material';
+import { DeviceMenuButton, type DeviceOption } from '../DeviceMenuButton/DeviceMenuButton.js';
 import { useUiText } from '../../text/UiText.js';
 
 export interface Device {
@@ -58,82 +38,9 @@ export interface DeviceSelectorProps {
    * screens, so the row lines up with what is above or below it (e.g. a video preview).
    */
   fullWidth?: boolean;
+  /** Open a picker's list when the mouse rests on it (see DeviceMenuButton). */
+  openOnHover?: boolean;
 }
-
-interface DeviceButtonProps {
-  icon: ReactNode;
-  label: string;
-  selectedDevice: string;
-  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  /** Share the row's width with the other pickers instead of sizing to the window */
-  grow?: boolean;
-}
-
-const DeviceButton: React.FC<DeviceButtonProps> = ({
-  icon,
-  selectedDevice,
-  onClick,
-  disabled = false,
-  fullWidth = false,
-  grow = false,
-}) => (
-  <Button
-    variant="outlined"
-    onClick={onClick}
-    disabled={disabled}
-    fullWidth={fullWidth}
-    sx={{
-      ...(fullWidth
-        ? { minWidth: 0 }
-        : grow
-          ? { flex: '1 1 160px', minWidth: 0 }
-          : {
-              minWidth: { xs: '20vw', sm: '15vw', md: '12vw', lg: '10vw' },
-              maxWidth: { xs: '25vw', sm: '18vw', md: '15vw', lg: '13vw' },
-            }),
-      justifyContent: 'space-between',
-      textTransform: 'none',
-      color: 'white',
-      borderColor: alpha('#fff', 0.3),
-      backgroundColor: alpha('#000', 0.2),
-      backdropFilter: 'blur(10px)',
-      '&:hover': {
-        borderColor: alpha('#fff', 0.5),
-        backgroundColor: alpha('#000', 0.3),
-      },
-      '&:disabled': {
-        color: alpha('#fff', 0.5),
-        borderColor: alpha('#fff', 0.2),
-      },
-    }}
-    startIcon={icon}
-    endIcon={<ExpandMore />}
-  >
-    <Box
-      sx={{
-        flex: 1,
-        textAlign: 'left',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        mx: 1,
-      }}
-    >
-      <Typography
-        variant="body2"
-        sx={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {selectedDevice}
-      </Typography>
-    </Box>
-  </Button>
-);
 
 // Extend Window interface for AudioContext
 declare global {
@@ -159,12 +66,11 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
   isMicOn = true,
   orientation = 'horizontal',
   fullWidth = false,
+  openOnHover = false,
 }) => {
   const vertical = orientation === 'vertical';
   const grow = !vertical && fullWidth;
-  const [cameraMenuAnchor, setCameraMenuAnchor] = useState<HTMLElement | null>(null);
-  const [micMenuAnchor, setMicMenuAnchor] = useState<HTMLElement | null>(null);
-  const [speakerMenuAnchor, setSpeakerMenuAnchor] = useState<HTMLElement | null>(null);
+  const [micMenuOpen, setMicMenuOpen] = useState(false);
   const [audioLevel, setAudioLevel] = useState<number>(0);
   const [selectedFacingMode, setSelectedFacingMode] = useState<'user' | 'environment' | null>(null);
 
@@ -255,111 +161,46 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
 
   // Start/stop audio monitoring when microphone menu opens/closes
   useEffect(() => {
-    if (Boolean(micMenuAnchor) && isMicOn) {
+    if (micMenuOpen && isMicOn) {
       startAudioLevelMonitoring();
     } else {
       stopAudioLevelMonitoring();
     }
 
     return () => stopAudioLevelMonitoring();
-  }, [micMenuAnchor, isMicOn, startAudioLevelMonitoring, stopAudioLevelMonitoring]);
-
-  const handleCameraMenuOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setCameraMenuAnchor(event.currentTarget);
-  }, []);
-
-  const handleMicMenuOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setMicMenuAnchor(event.currentTarget);
-  }, []);
-
-  const handleSpeakerMenuOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setSpeakerMenuAnchor(event.currentTarget);
-  }, []);
-
-  const handleMenuClose = useCallback((): void => {
-    setCameraMenuAnchor(null);
-    setMicMenuAnchor(null);
-    setSpeakerMenuAnchor(null);
-  }, []);
+  }, [micMenuOpen, isMicOn, startAudioLevelMonitoring, stopAudioLevelMonitoring]);
 
   const handleCameraSelect = useCallback(
     (deviceId: string) => {
       if (deviceId.startsWith('facingMode:')) {
-        const facingMode = deviceId.split(':')[1] as 'user' | 'environment';
-        setSelectedFacingMode(facingMode);
+        setSelectedFacingMode(deviceId.split(':')[1] as 'user' | 'environment');
       }
       onCameraChange?.(deviceId);
-      handleMenuClose();
     },
-    [onCameraChange, handleMenuClose],
+    [onCameraChange],
   );
 
-  const handleMicrophoneSelect = useCallback(
-    (deviceId: string) => {
-      onMicrophoneChange?.(deviceId);
-      handleMenuClose();
-    },
-    [onMicrophoneChange, handleMenuClose],
-  );
+  const toOptions = (list?: Device[]): DeviceOption[] =>
+    (list ?? []).map((device) => ({ value: device.deviceId, label: device.label }));
 
-  const handleSpeakerSelect = useCallback(
-    (deviceId: string) => {
-      onSpeakerChange?.(deviceId);
-      handleMenuClose();
-    },
-    [onSpeakerChange, handleMenuClose],
-  );
+  const cameraOptions: DeviceOption[] = isMobile
+    ? mobileCameraOptions.map((option) => ({ value: option.id, label: option.label }))
+    : toOptions(devices.videoInputs);
 
-  const getSelectedDeviceName = (deviceList?: Device[], selectedId?: string): string => {
-    const device = deviceList?.find((d) => d.deviceId === selectedId);
-    return device?.label || text.noDeviceSelected;
-  };
-
-  // Menus portal to <body>: with disablePortal, MUI's modal manager aria-hides the app root and
-  // with it the open menu, so screen readers could not reach the device list.
-  const getMenuProps = (anchorEl: HTMLElement | null) => ({
-    anchorEl: anchorEl,
-    open: Boolean(anchorEl),
-    onClose: handleMenuClose,
-    anchorOrigin: {
-      vertical: 'bottom' as const,
-      horizontal: 'center' as const,
-    },
-    transformOrigin: {
-      vertical: 'top' as const,
-      horizontal: 'center' as const,
-    },
-    sx: {
-      zIndex: 9999,
-    },
-    PaperProps: {
-      sx: {
-        width: 'auto',
-        backgroundColor: alpha('#000', 0.9),
-        backdropFilter: 'blur(20px)',
-        border: `1px solid ${alpha('#fff', 0.1)}`,
-        maxHeight: 300,
-        minWidth: Math.min(anchorEl?.offsetWidth || 200, 360),
-        // A compact popup under its button; long device names are truncated, not stretched across the page
-        maxWidth: 'min(360px, calc(100vw - 32px))',
-        borderRadius: `${radii.container}px`,
-        mt: 1,
-        zIndex: 9999,
-        position: 'relative',
-        '& .MuiMenuItem-root': {
-          color: 'white',
-          '&:hover': {
-            backgroundColor: alpha('#fff', 0.1),
+  const pickerProps = {
+    openOnHover,
+    placement: 'bottom' as const,
+    fullWidth: vertical,
+    maxWidth: vertical ? '100%' : undefined,
+    sx: grow
+      ? { flex: '1 1 160px', minWidth: 0, maxWidth: 'none' }
+      : vertical
+        ? undefined
+        : {
+            minWidth: { xs: '20vw', sm: '15vw', md: '12vw', lg: '10vw' },
+            maxWidth: { xs: '25vw', sm: '18vw', md: '15vw', lg: '13vw' },
           },
-        },
-      },
-    },
-    MenuListProps: {
-      sx: {
-        py: 0,
-      },
-    },
-  });
+  };
 
   return (
     <Box
@@ -379,211 +220,62 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         flexWrap: 'wrap',
       }}
     >
-      {/* Camera Selector */}
-      <DeviceButton
+      <DeviceMenuButton
         icon={isCameraOn ? <Videocam /> : <VideocamOff />}
         label={text.camera}
-        fullWidth={vertical}
-        grow={grow}
-        selectedDevice={getSelectedDeviceName(devices.videoInputs, selectedCamera)}
-        onClick={handleCameraMenuOpen}
-        disabled={devices.videoInputs?.length === 0}
+        options={cameraOptions}
+        value={isMobile && selectedFacingMode ? `facingMode:${selectedFacingMode}` : selectedCamera}
+        onChange={handleCameraSelect}
+        emptyText={text.noDeviceSelected}
+        {...pickerProps}
       />
-
-      {/* Microphone Selector */}
-      <DeviceButton
+      <DeviceMenuButton
         icon={isMicOn ? <Mic /> : <MicOff />}
         label={text.microphone}
-        fullWidth={vertical}
-        grow={grow}
-        selectedDevice={getSelectedDeviceName(devices.audioInputs, selectedMicrophone)}
-        onClick={handleMicMenuOpen}
-        disabled={devices.audioInputs?.length === 0}
+        options={toOptions(devices.audioInputs)}
+        value={selectedMicrophone}
+        onChange={(deviceId) => onMicrophoneChange?.(deviceId)}
+        emptyText={text.noDeviceSelected}
+        onOpenChange={setMicMenuOpen}
+        menuFooter={
+          isMicOn ? (
+            <Box sx={{ px: 2, pt: 1, pb: 1.5 }}>
+              <LinearProgress
+                variant="determinate"
+                value={audioLevel}
+                aria-label={text.microphone}
+                sx={(theme) => ({
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: alpha(theme.palette.text.primary, 0.1),
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 3,
+                    backgroundColor:
+                      audioLevel > 80
+                        ? theme.palette.error.main
+                        : audioLevel > 50
+                          ? theme.palette.warning.main
+                          : theme.palette.success.main,
+                  },
+                })}
+              />
+              <Typography variant="caption" sx={{ display: 'block', mt: 0.5, opacity: 0.7 }}>
+                {Math.round(audioLevel)}%
+              </Typography>
+            </Box>
+          ) : null
+        }
+        {...pickerProps}
       />
-
-      {/* Speaker Selector */}
-      <DeviceButton
+      <DeviceMenuButton
         icon={<VolumeUp />}
         label={text.speaker}
-        fullWidth={vertical}
-        grow={grow}
-        selectedDevice={getSelectedDeviceName(devices.audioOutputs, selectedSpeaker)}
-        onClick={handleSpeakerMenuOpen}
-        disabled={devices.audioOutputs?.length === 0}
+        options={toOptions(devices.audioOutputs)}
+        value={selectedSpeaker}
+        onChange={(deviceId) => onSpeakerChange?.(deviceId)}
+        emptyText={text.noDeviceSelected}
+        {...pickerProps}
       />
-
-      {/* Camera Menu */}
-      <Menu {...getMenuProps(cameraMenuAnchor)}>
-        <Typography variant="subtitle2" sx={{ px: 2, py: 1, color: alpha('#fff', 0.7) }}>
-          Select Camera
-        </Typography>
-        <Divider sx={{ borderColor: alpha('#fff', 0.1) }} />
-        {isMobile
-          ? mobileCameraOptions.map((option) => (
-              <MenuItem
-                key={option.id}
-                onClick={() => handleCameraSelect(option.id)}
-                selected={selectedFacingMode === option.facingMode}
-              >
-                <ListItemIcon>
-                  {selectedFacingMode === option.facingMode ? (
-                    <Check sx={{ color: '#4CAF50' }} />
-                  ) : (
-                    <Videocam sx={{ color: alpha('#fff', 0.7) }} />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  primary={option.label}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                />
-              </MenuItem>
-            ))
-          : devices.videoInputs?.map((device) => (
-              <MenuItem
-                key={device.deviceId}
-                title={device.label}
-                onClick={() => handleCameraSelect(device.deviceId)}
-                selected={selectedCamera === device.deviceId}
-              >
-                <ListItemIcon>
-                  {selectedCamera === device.deviceId ? (
-                    <Check sx={{ color: '#4CAF50' }} />
-                  ) : (
-                    <Videocam sx={{ color: alpha('#fff', 0.7) }} />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  primary={device.label}
-                  primaryTypographyProps={{
-                    variant: 'body2',
-                    sx: {
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    },
-                  }}
-                />
-              </MenuItem>
-            ))}
-      </Menu>
-
-      {/* Microphone Menu */}
-      <Menu {...getMenuProps(micMenuAnchor)}>
-        <Typography variant="subtitle2" sx={{ px: 2, py: 1, color: alpha('#fff', 0.7) }}>
-          Select Microphone
-        </Typography>
-        <Divider sx={{ borderColor: alpha('#fff', 0.1) }} />
-        {devices.audioInputs?.map((device) => (
-          <MenuItem
-            key={device.deviceId}
-            title={device.label}
-            onClick={() => handleMicrophoneSelect(device.deviceId)}
-            selected={selectedMicrophone === device.deviceId}
-          >
-            <ListItemIcon>
-              {selectedMicrophone === device.deviceId ? (
-                <Check sx={{ color: '#4CAF50' }} />
-              ) : (
-                <Mic sx={{ color: alpha('#fff', 0.7) }} />
-              )}
-            </ListItemIcon>
-            <ListItemText
-              primary={device.label}
-              primaryTypographyProps={{
-                variant: 'body2',
-                sx: {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                },
-              }}
-            />
-          </MenuItem>
-        ))}
-        <Divider sx={{ borderColor: alpha('#fff', 0.1) }} />
-        {/* Audio Level Indicator */}
-        <MenuItem
-          disabled
-          sx={{
-            opacity: 1,
-            '&.Mui-disabled': {
-              opacity: 1,
-            },
-          }}
-        >
-          <ListItemIcon>
-            <BarChart sx={{ color: alpha('#fff', 0.7) }} />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Audio Level
-                </Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={audioLevel}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: alpha('#fff', 0.1),
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor:
-                        audioLevel > 80 ? '#f44336' : audioLevel > 50 ? '#ff9800' : '#4caf50',
-                      borderRadius: 4,
-                    },
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: alpha('#fff', 0.6),
-                    mt: 0.5,
-                    display: 'block',
-                  }}
-                >
-                  {Math.round(audioLevel)}%
-                </Typography>
-              </Box>
-            }
-          />
-        </MenuItem>
-      </Menu>
-
-      {/* Speaker Menu */}
-      <Menu {...getMenuProps(speakerMenuAnchor)}>
-        <Typography variant="subtitle2" sx={{ px: 2, py: 1, color: alpha('#fff', 0.7) }}>
-          Select Speaker
-        </Typography>
-        <Divider sx={{ borderColor: alpha('#fff', 0.1) }} />
-        {devices.audioOutputs?.map((device) => (
-          <MenuItem
-            key={device.deviceId}
-            title={device.label}
-            onClick={() => handleSpeakerSelect(device.deviceId)}
-            selected={selectedSpeaker === device.deviceId}
-          >
-            <ListItemIcon>
-              {selectedSpeaker === device.deviceId ? (
-                <Check sx={{ color: '#4CAF50' }} />
-              ) : (
-                <VolumeUp sx={{ color: alpha('#fff', 0.7) }} />
-              )}
-            </ListItemIcon>
-            <ListItemText
-              primary={device.label}
-              primaryTypographyProps={{
-                variant: 'body2',
-                sx: {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                },
-              }}
-            />
-          </MenuItem>
-        ))}
-      </Menu>
     </Box>
   );
 };

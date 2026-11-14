@@ -11,10 +11,12 @@ import {
   controlPadding,
   disabledOpacity,
   fontFamily,
+  motion,
   radii,
   typography,
   type Typeface,
 } from '../tokens/tokens.js';
+import { enterAnimation, reducedMotion } from '../motion/motion.js';
 
 type ThemeColorScale = {
   0: string;
@@ -112,6 +114,24 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
         color: colors.secondaryText,
       },
     },
+    // MUI's own transitions (dialogs, drawers, menus, switches, collapses) on the motion tokens
+    transitions: {
+      easing: {
+        easeInOut: motion.easing.standard,
+        easeOut: motion.easing.decelerate,
+        easeIn: motion.easing.accelerate,
+        sharp: motion.easing.accelerate,
+      },
+      duration: {
+        shortest: motion.duration.instant,
+        shorter: motion.duration.fast,
+        short: motion.duration.base,
+        standard: motion.duration.enter,
+        complex: motion.duration.slow,
+        enteringScreen: motion.duration.slow,
+        leavingScreen: motion.duration.exit,
+      },
+    },
     components: {
       MuiSelect: {
         styleOverrides: {
@@ -163,6 +183,8 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
             padding: '12px 40px 32px',
             width: '100%',
             backgroundColor: colors.themeColor75,
+            // The backdrop fades; the dialog grows in on top of it
+            ...enterAnimation({ variant: 'scale' }),
           },
         },
       },
@@ -449,6 +471,14 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
         }
         *::-webkit-scrollbar-thumb:hover {
           background-color: ${colors.themeColor50};
+        }
+        /* Less motion when the system asks for it: state changes stay, the travel goes. Loops
+           (spinners, live dots) turn themselves off where they aren't essential. */
+        ${reducedMotion} {
+          *, *::before, *::after {
+            transition-duration: 1ms !important;
+            scroll-behavior: auto !important;
+          }
         }
       `,
       },
