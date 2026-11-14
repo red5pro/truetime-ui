@@ -22,6 +22,11 @@ export interface ToolbarButtonProps extends Omit<ButtonBaseProps, 'children'> {
   /** Hide the tooltip, e.g. when the button already shows its label. Defaults to chips. */
   hideTooltip?: boolean;
   tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
+  /**
+   * Tooltip, when it should say more than the name: e.g. name "Camera" (with `pressed` for its
+   * state) and tooltip "Turn camera off". Defaults to `label`.
+   */
+  tooltip?: ReactNode;
 }
 
 /**
@@ -39,6 +44,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
       pressed,
       hideTooltip,
       tooltipPlacement = 'top',
+      tooltip,
       disabled,
       sx,
       ...props
@@ -100,9 +106,13 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
 
     if (hideTooltip ?? chip) return button;
     return (
-      <Tooltip title={label} placement={tooltipPlacement}>
-        {/* A disabled button fires no events, so the tooltip needs a wrapper to show */}
-        {disabled ? <span style={{ display: 'inline-flex' }}>{button}</span> : button}
+      <Tooltip title={tooltip ?? label} placement={tooltipPlacement}>
+        {/*
+          A disabled button fires no events, so the tooltip listens on a wrapper. It's always there:
+          adding it only while disabled would replace the button's element whenever that changes,
+          losing keyboard focus.
+        */}
+        <span style={{ display: 'inline-flex' }}>{button}</span>
       </Tooltip>
     );
   },
