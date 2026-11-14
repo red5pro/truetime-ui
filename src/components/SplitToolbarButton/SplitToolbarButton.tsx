@@ -13,6 +13,10 @@ export interface SplitToolbarButtonProps {
   icon: ReactNode;
   /** Accessible name and tooltip of the toggle, e.g. "Turn off camera". */
   label: string;
+  /** Tooltip of the toggle when it should differ from `label` (e.g. label "Camera"). */
+  tooltip?: ReactNode;
+  /** For a toggle named after the device: whether it's on, reported as `aria-pressed`. */
+  pressed?: boolean;
   /** `off` when the device is off; `default` otherwise. */
   tone?: ToolbarTone;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
@@ -47,6 +51,8 @@ const OPTIONS_HOVER_DELAY_MS = 150;
 export function SplitToolbarButton({
   icon,
   label,
+  tooltip,
+  pressed,
   tone = 'default',
   onClick,
   disabled,
@@ -131,6 +137,8 @@ export function SplitToolbarButton({
         id={id}
         icon={icon}
         label={label}
+        tooltip={tooltip}
+        pressed={pressed}
         tone={tone}
         disabled={disabled}
         onClick={onClick}

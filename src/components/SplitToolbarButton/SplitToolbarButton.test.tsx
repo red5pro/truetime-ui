@@ -91,3 +91,21 @@ describe('SplitToolbarButton hover', () => {
     expect(onOptionsHover).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('SplitToolbarButton naming', () => {
+  it('reports the toggle state and shows a separate tooltip', async () => {
+    renderWithTheme(
+      <SplitToolbarButton
+        icon={<svg />}
+        label="Microphone"
+        tooltip="Mute microphone"
+        pressed
+        optionsLabel="Microphone options"
+      />,
+    );
+    const toggle = screen.getByRole('button', { name: 'Microphone' });
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.mouseOver(toggle);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Mute microphone');
+  });
+});
