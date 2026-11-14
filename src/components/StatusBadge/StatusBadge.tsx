@@ -3,6 +3,7 @@ import { alpha, type SxProps, type Theme } from '@mui/material/styles';
 import { ErrorOutline } from '@mui/icons-material';
 import type { ReactNode } from 'react';
 import { themeColors } from '../styleUtils.js';
+import { transition } from '../../motion/motion.js';
 
 export type StatusTone = 'live' | 'preview' | 'success' | 'warning' | 'error' | 'neutral';
 
@@ -50,6 +51,7 @@ export function StatusBadge({ tone = 'neutral', children, sx }: StatusBadgeProps
             textTransform: 'uppercase',
             lineHeight: '18px',
             whiteSpace: 'nowrap',
+            transition: transition(['background-color', 'color']),
             ...(solid ?? { color: accent, backgroundColor: alpha(accent, 0.14) }),
           };
         },

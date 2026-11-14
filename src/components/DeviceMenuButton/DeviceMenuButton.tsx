@@ -20,16 +20,15 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import { alpha, type SxProps, type Theme } from '@mui/material/styles';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
 import Check from '@mui/icons-material/Check';
 import {
   borderWidth,
   controlBar,
   disabledOpacity,
-  motion,
   radii,
   typography,
 } from '../../tokens/tokens.js';
+import { transition } from '../../motion/motion.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 
 export interface DeviceOption {
@@ -223,7 +222,7 @@ export function DeviceMenuButton({
               fontFamily: 'inherit',
               fontSize: typography.body2.fontSize,
               fontWeight: typography.button.fontWeight,
-              transition: motion.standard,
+              transition: transition(['background-color', 'color', 'border-color', 'opacity']),
               '& > svg': { fontSize: 20, flexShrink: 0 },
               '@media (hover: hover)': {
                 '&:hover': { backgroundColor: alpha(colors.text, 0.08) },
@@ -249,7 +248,13 @@ export function DeviceMenuButton({
         >
           {shownLabel}
         </Box>
-        {open ? <ArrowDropUp /> : <ArrowDropDown />}
+        {/* One arrow that turns over, rather than two icons swapping */}
+        <ArrowDropDown
+          sx={{
+            transform: open ? 'rotate(180deg)' : 'none',
+            transition: transition('transform'),
+          }}
+        />
       </ButtonBase>
 
       <Popper

@@ -4,7 +4,8 @@ import ButtonBase from '@mui/material/ButtonBase';
 import Tooltip from '@mui/material/Tooltip';
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { controlBar, disabledOpacity, motion, radii } from '../../tokens/tokens.js';
+import { controlBar, disabledOpacity, radii } from '../../tokens/tokens.js';
+import { transition } from '../../motion/motion.js';
 import { focusRingStyle } from '../styleUtils.js';
 import { ToolbarButton } from '../ToolbarButton/ToolbarButton.js';
 import { segmentColors, type ToolbarTone } from '../ToolbarButton/toolbarTones.js';
@@ -85,7 +86,7 @@ export function SplitToolbarButton({
           flexShrink: 0,
           borderRadius: `${radii.pill}px`,
           backgroundColor: segment.background,
-          transition: motion.standard,
+          transition: transition(['background-color', 'color', 'border-color', 'opacity']),
           '& .split-chevron': { display: showIdle ? 'none' : 'inline-flex' },
           ...(showIdle && {
             '&:hover .split-idle, &:focus-within .split-idle': { display: 'none' },
@@ -114,7 +115,7 @@ export function SplitToolbarButton({
               width: controlBar.segmentWidth,
               borderRadius: `${radii.pill}px 0 0 ${radii.pill}px`,
               color: segment.color,
-              transition: motion.standard,
+              transition: transition(['background-color', 'color', 'border-color', 'opacity']),
               '& svg': { fontSize: 22 },
               '@media (hover: hover)': { '&:hover': { backgroundColor: segment.hover } },
               '&.Mui-focusVisible': focusRingStyle(theme),

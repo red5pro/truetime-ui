@@ -34,6 +34,25 @@ export {
 } from './tokens/tokens.js';
 export { contrastRatio, looksLikeTally, readableOn, relativeLuminance } from './tokens/contrast.js';
 
+// Motion: transitions and enter animations on the motion tokens
+export {
+  transition,
+  enterAnimation,
+  pressFeedback,
+  reducedMotion,
+  enterKeyframes,
+  fadeIn,
+  fadeInUp,
+  fadeInDown,
+  fadeInLeft,
+  scaleIn,
+  popIn,
+  pulse,
+  type EnterVariant,
+  type EnterAnimationOptions,
+  type TransitionOptions,
+} from './motion/motion.js';
+
 // Theme
 export { createTrueTimeTheme, type TrueTimeThemeExtension } from './theme/createTrueTimeTheme.js';
 export {
@@ -62,6 +81,7 @@ export {
   type AudioMeterProps,
 } from './components/AudioMeter/AudioMeter.js';
 export { Button, type ButtonProps } from './components/Button/Button.js';
+export { Reveal, type RevealProps } from './components/Reveal/Reveal.js';
 export { Card, type CardProps } from './components/Card/Card.js';
 export {
   CaptionsOverlay,

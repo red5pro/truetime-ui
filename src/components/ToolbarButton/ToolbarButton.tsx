@@ -1,7 +1,8 @@
 import { forwardRef, type ReactNode } from 'react';
 import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import Tooltip from '@mui/material/Tooltip';
-import { controlBar, disabledOpacity, motion, radii, typography } from '../../tokens/tokens.js';
+import { controlBar, disabledOpacity, radii, typography } from '../../tokens/tokens.js';
+import { pressFeedback, transition } from '../../motion/motion.js';
 import { focusRingStyle } from '../styleUtils.js';
 import { toolbarToneColors, type ToolbarTone } from './toolbarTones.js';
 
@@ -81,7 +82,8 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
               fontSize: typography.body2.fontSize,
               fontWeight: typography.button.fontWeight,
               whiteSpace: 'nowrap',
-              transition: motion.standard,
+              transition: transition(['background-color', 'color', 'opacity', 'transform']),
+              ...pressFeedback,
               flexShrink: 0,
               '& svg': { fontSize: chip ? 20 : 24 },
               '@media (hover: hover)': { '&:hover': { backgroundColor: tones.hover } },

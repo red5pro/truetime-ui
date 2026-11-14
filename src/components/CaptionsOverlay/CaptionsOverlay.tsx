@@ -4,6 +4,7 @@ import { readableOn } from '../../tokens/contrast.js';
 import { radii, typography } from '../../tokens/tokens.js';
 import { useUiText } from '../../text/UiText.js';
 import { themeColors } from '../styleUtils.js';
+import { enterAnimation } from '../../motion/motion.js';
 
 export interface Caption {
   /** Stable key for the line. */
@@ -66,6 +67,7 @@ export function CaptionsOverlay({ captions, maxLines = 3, sx, ...props }: Captio
               lineHeight: 1.4,
               textAlign: 'center',
               overflowWrap: 'anywhere',
+              ...enterAnimation({ variant: 'up', duration: 'fast' }),
             };
           }}
         >

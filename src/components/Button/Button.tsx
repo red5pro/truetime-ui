@@ -14,6 +14,7 @@ import MuiButton, {
 import type { ExtendButtonBase } from '@mui/material/ButtonBase';
 import type { SxProps, Theme } from '@mui/material/styles';
 import { radii } from '../../tokens/tokens.js';
+import { pressFeedback, transition } from '../../motion/motion.js';
 import { focusRingStyle } from '../styleUtils.js';
 import { useUiText } from '../../text/UiText.js';
 
@@ -35,6 +36,8 @@ interface ButtonOwnProps {
 export type ButtonProps = MuiButtonProps & ButtonOwnProps;
 
 const baseSx: SxProps<Theme> = (theme) => ({
+  transition: transition(['background-color', 'box-shadow', 'border-color', 'color', 'transform']),
+  ...pressFeedback,
   '&.Mui-focusVisible': focusRingStyle(theme),
   '&.MuiButton-loading': { cursor: 'progress' },
 });
@@ -52,7 +55,9 @@ const holdSx = (holdMs: number, holding: boolean): SxProps<Theme> => ({
     opacity: 0.22,
     transformOrigin: 'left',
     transform: holding ? 'scaleX(1)' : 'scaleX(0)',
-    transition: holding ? `transform ${holdMs}ms linear` : 'transform 150ms ease-out',
+    transition: holding
+      ? `transform ${holdMs}ms linear`
+      : transition('transform', { duration: 'fast' }),
     pointerEvents: 'none',
     zIndex: -1,
   },

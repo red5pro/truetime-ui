@@ -1,6 +1,7 @@
 import { styled, Theme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { shadows } from '../../tokens/tokens.js';
+import { pressFeedback, transition } from '../../motion/motion.js';
 
 export interface ControlButtonProps {
   glass?: boolean;
@@ -44,6 +45,18 @@ export const ControlButton = styled(Button, {
   };
 
   return {
+    // On the base state, so leaving hover animates back too
+    transition: transition([
+      'background-color',
+      'background',
+      'box-shadow',
+      'border-color',
+      'color',
+      'transform',
+      'backdrop-filter',
+    ]),
+    ...pressFeedback,
+
     // Enhanced contrast for overlay buttons
     ...(overlay && {
       boxShadow: shadows.overlay,
@@ -64,7 +77,6 @@ export const ControlButton = styled(Button, {
     '&:hover': {
       backgroundColor: getHoverColor(),
       transform: 'scale(1.02)',
-      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     },
 
     // Disabled state
@@ -103,7 +115,6 @@ export const ControlButton = styled(Button, {
         backdropFilter: 'blur(25px)',
         WebkitBackdropFilter: 'blur(25px)',
         transform: 'scale(1.02)',
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: `
           0 12px 40px rgba(0, 0, 0, 0.15),
           inset 0 1px 0 rgba(255, 255, 255, 0.4),
