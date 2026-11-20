@@ -91,7 +91,7 @@ export function DeviceMenuButton({
     anchorRef.current = element;
     setAnchorEl(element);
   }, []);
-  const canOpen = !disabled && options.length > 0;
+  const canOpen = !disabled && options?.length > 0;
   const {
     open,
     pinned,
