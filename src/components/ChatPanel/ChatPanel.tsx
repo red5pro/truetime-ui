@@ -103,7 +103,7 @@ export function ChatPanel({
 
   const send = (event?: FormEvent) => {
     event?.preventDefault();
-    const text = draft.trim();
+    const text = draft?.trim();
     if ((!text && !canSendWithoutText) || sending) return;
     const result = onSend(text);
     if (!(result instanceof Promise)) {
@@ -114,7 +114,7 @@ export function ChatPanel({
     result
       .then((sent) => {
         // Text typed meanwhile is kept
-        if (sent !== false) setDraft((current) => (current.trim() === text ? '' : current));
+        if (sent !== false) setDraft((current) => (current?.trim() === text ? '' : current));
       })
       .catch(() => {})
       .finally(() => setSending(false));
@@ -261,7 +261,7 @@ export function ChatPanel({
               <IconButton
                 type="submit"
                 aria-label={sendLabel}
-                disabled={(!draft.trim() && !canSendWithoutText) || sending}
+                disabled={(!draft?.trim() && !canSendWithoutText) || sending}
                 sx={(theme) => ({
                   color: themeColors(theme).text,
                   '&:hover': { backgroundColor: themeColors(theme).surfaceHover },
