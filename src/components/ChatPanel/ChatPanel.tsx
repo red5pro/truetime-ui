@@ -99,7 +99,7 @@ export function ChatPanel({
   useEffect(() => {
     const log = logRef.current;
     if (log) log.scrollTop = log.scrollHeight;
-  }, [messages.length]);
+  }, [messages?.length]);
 
   const send = (event?: FormEvent) => {
     event?.preventDefault();
@@ -144,7 +144,7 @@ export function ChatPanel({
           '&:focus-visible': focusRingStyle(theme),
         })}
       >
-        {messages.length === 0 ? (
+        {messages?.length === 0 ? (
           <Box
             sx={(theme) => ({
               m: 'auto',
