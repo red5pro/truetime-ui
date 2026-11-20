@@ -3,6 +3,8 @@ import { Box, Typography, LinearProgress, alpha } from '@mui/material';
 import { Videocam, VideocamOff, Mic, MicOff, VolumeUp } from '@mui/icons-material';
 import { DeviceMenuButton, type DeviceOption } from '../DeviceMenuButton/DeviceMenuButton.js';
 import { useUiText } from '../../text/UiText.js';
+import { radii } from '../../tokens/tokens.js';
+import { themeColors } from '../styleUtils.js';
 
 export interface Device {
   deviceId: string;
@@ -211,10 +213,11 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
         position: 'relative',
         zIndex: 1000,
         p: vertical ? 1 : 2,
-        backgroundColor: alpha('#000', 0.1),
+        // A light frosted strip: it sits over the camera preview in the lobby
+        backgroundColor: (theme) => alpha(themeColors(theme).monitor, 0.1),
         backdropFilter: 'blur(20px)',
-        borderRadius: 2,
-        border: `1px solid ${alpha('#fff', 0.1)}`,
+        borderRadius: `${radii.container}px`,
+        border: (theme) => `1px solid ${alpha(themeColors(theme).text, 0.1)}`,
         width: vertical || grow ? '100%' : { xs: '100%', sm: 'fit-content' },
         maxWidth: '100%',
         flexWrap: 'wrap',
@@ -246,10 +249,10 @@ export const DeviceSelector: React.FC<DeviceSelectorProps> = ({
                 aria-label={text.microphone}
                 sx={(theme) => ({
                   height: 6,
-                  borderRadius: 3,
+                  borderRadius: `${radii.container}px`,
                   backgroundColor: alpha(theme.palette.text.primary, 0.1),
                   '& .MuiLinearProgress-bar': {
-                    borderRadius: 3,
+                    borderRadius: `${radii.container}px`,
                     backgroundColor:
                       audioLevel > 80
                         ? theme.palette.error.main

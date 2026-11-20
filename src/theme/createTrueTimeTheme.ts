@@ -1,5 +1,6 @@
 import { createTheme, responsiveFontSizes, type Theme } from '@mui/material/styles';
 import {
+  broadcastColors,
   palettes,
   semanticColors,
   type SemanticColors,
@@ -16,7 +17,7 @@ import {
   typography,
   type Typeface,
 } from '../tokens/tokens.js';
-import { readableOn } from '../tokens/contrast.js';
+import { mixColors, readableOn } from '../tokens/contrast.js';
 import { enterAnimation, reducedMotion } from '../motion/motion.js';
 
 type ThemeColorScale = {
@@ -97,7 +98,7 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
     truetime: { name, palette: colors, colors: semanticColors(colors) },
     typography: {
       allVariants: {
-        color: '#FFFFFF',
+        color: colors.themeColor99,
         fontFamily: FONT,
       },
       h1: {
@@ -111,7 +112,7 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
       h6: { fontFamily: DISPLAY, ...typography.h6 },
       body1: {
         ...typography.body1,
-        color: '#FFFFFF',
+        color: colors.themeColor99,
       },
       body2: {
         ...typography.body2,
@@ -362,8 +363,8 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
             borderColor: colors.error,
             color: onFill(colors.error),
             '&:hover': {
-              backgroundColor: '#E53935',
-              color: onFill('#E53935'),
+              backgroundColor: mixColors(colors.error, broadcastColors.monitor, 0.12),
+              color: onFill(mixColors(colors.error, broadcastColors.monitor, 0.12)),
             },
             '&.Mui-disabled': {
               opacity: disabledOpacity,
@@ -497,8 +498,8 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
       primary: {
         main: colors.primaryColor,
         contrastText: readableOn(colors.primaryColor, colors.themeColor90, colors.themeColor99),
-        dark: '#7A7A7A',
-        light: '#9A9A9A',
+        dark: colors.activeColor,
+        light: colors.hoverColor,
       },
       secondary: {
         main: colors.secondaryColor,
@@ -508,23 +509,23 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
       error: {
         main: colors.error,
         contrastText: readableOn(colors.error, colors.themeColor90, colors.themeColor99),
-        dark: '#E53935',
-        light: '#EF5350',
+        dark: mixColors(colors.error, broadcastColors.monitor, 0.2),
+        light: mixColors(colors.error, colors.themeColor99, 0.25),
       },
       warning: {
         main: colors.warning,
-        dark: '#F57C00',
-        light: '#FFCC02',
+        dark: mixColors(colors.warning, broadcastColors.monitor, 0.2),
+        light: mixColors(colors.warning, colors.themeColor99, 0.25),
       },
       success: {
         main: colors.success,
-        dark: '#388E3C',
-        light: '#A5D6A7',
+        dark: mixColors(colors.success, broadcastColors.monitor, 0.2),
+        light: mixColors(colors.success, colors.themeColor99, 0.25),
       },
       info: {
         main: colors.info,
-        dark: '#1976D2',
-        light: '#90CAF9',
+        dark: mixColors(colors.info, broadcastColors.monitor, 0.2),
+        light: mixColors(colors.info, colors.themeColor99, 0.25),
       },
       textColor: colors.textColor,
       chatText: colors.chatText,
