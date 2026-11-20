@@ -8,8 +8,14 @@ import { enterAnimation, transition } from '../../motion/motion.js';
 import { useUiText } from '../../text/UiText.js';
 
 export interface VideoTileProps {
-  /** Live media; null renders the avatar placeholder. */
-  stream: MediaStream | null;
+  /** Live media; null renders the avatar placeholder. Ignored when `media` is given. */
+  stream?: MediaStream | null;
+  /**
+   * Your own media element (usually a <video>) instead of `stream`, for SDKs that attach media to an
+   * element they manage. It fills the tile, follows `fit` and `mirrored`, and stays mounted (hidden)
+   * while `videoEnabled` is false, so its audio keeps playing.
+   */
+  media?: ReactNode;
   name: string;
   /** False when the participant turned their camera off. */
   videoEnabled?: boolean;
@@ -61,7 +67,8 @@ function initials(name: string) {
 
 /** One participant's video with name label, mic state and optional hover actions. */
 export function VideoTile({
-  stream,
+  stream = null,
+  media,
   name,
   videoEnabled = true,
   audioEnabled = true,
@@ -82,14 +89,15 @@ export function VideoTile({
 }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const text = useUiText();
-  const showVideo = Boolean(stream) && videoEnabled;
+  const ownMedia = media != null;
+  const showVideo = (ownMedia || Boolean(stream)) && videoEnabled;
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || ownMedia) return;
     video.srcObject = showVideo ? stream : null;
     if (showVideo) video.play?.()?.catch(() => {});
-  }, [stream, showVideo]);
+  }, [stream, showVideo, ownMedia]);
 
   return (
     <Box
@@ -133,24 +141,46 @@ export function VideoTile({
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
-      <Box
-        component="video"
-        id={videoId}
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted={!playAudio}
-        sx={{
-          display: showVideo ? 'block' : 'none',
-          width: '100%',
-          height: '100%',
-          objectFit: fit,
-          transform: mirrored ? 'scaleX(-1)' : 'none',
-          backgroundColor: '#000',
-          // Camera turning on: the picture fades in over the avatar
-          ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
-        }}
-      />
+      {ownMedia ? (
+        <Box
+          data-tile-media
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            visibility: showVideo ? 'visible' : 'hidden',
+            backgroundColor: '#000',
+            transform: mirrored ? 'scaleX(-1)' : 'none',
+            '& > video, & > canvas, & > img': {
+              display: 'block',
+              width: '100%',
+              height: '100%',
+              objectFit: fit,
+            },
+            ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
+          }}
+        >
+          {media}
+        </Box>
+      ) : (
+        <Box
+          component="video"
+          id={videoId}
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted={!playAudio}
+          sx={{
+            display: showVideo ? 'block' : 'none',
+            width: '100%',
+            height: '100%',
+            objectFit: fit,
+            transform: mirrored ? 'scaleX(-1)' : 'none',
+            backgroundColor: '#000',
+            // Camera turning on: the picture fades in over the avatar
+            ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
+          }}
+        />
+      )}
 
       {!showVideo && (
         <Box
@@ -228,6 +258,7 @@ export function VideoTile({
 
       {showName && (
         <Box
+          data-tile-name
           sx={(theme) => ({
             position: 'absolute',
             left: 8,

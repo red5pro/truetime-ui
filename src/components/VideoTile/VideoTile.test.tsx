@@ -16,6 +16,25 @@ describe('VideoTile', () => {
     expect(screen.queryByText('NC')).not.toBeInTheDocument();
   });
 
+  it('renders a media element the caller manages, kept mounted while the camera is off', () => {
+    const { container, rerender } = renderWithTheme(
+      <VideoTile name="Ada" media={<video data-testid="sdk-video" />} />,
+    );
+    // Only the caller's element: no second <video> of the tile's own
+    expect(container.querySelectorAll('video')).toHaveLength(1);
+    expect(screen.getByTestId('sdk-video')).toBeVisible();
+    expect(screen.queryByText('AD')).toBeNull();
+
+    rerender(
+      <TrueTimeThemeProvider>
+        <VideoTile name="Ada" media={<video data-testid="sdk-video" />} videoEnabled={false} />
+      </TrueTimeThemeProvider>,
+    );
+    expect(screen.getByTestId('sdk-video')).toBeInTheDocument();
+    expect(screen.getByTestId('sdk-video')).not.toBeVisible();
+    expect(screen.getByText('AD')).toBeInTheDocument();
+  });
+
   it('attaches the stream muted and labels the tile', () => {
     const stream = {} as MediaStream;
     const { container } = renderWithTheme(

@@ -16,6 +16,7 @@ import {
   typography,
   type Typeface,
 } from '../tokens/tokens.js';
+import { readableOn } from '../tokens/contrast.js';
 import { enterAnimation, reducedMotion } from '../motion/motion.js';
 
 type ThemeColorScale = {
@@ -88,6 +89,9 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
   // Text face: the brand face throughout, or Inter with the brand face kept for headings
   const textFace = typeface === 'interface' ? fontFamily.ui : fontFamily.display;
   const FONT = `'${textFace}', ${fontFamily.fallback} !important`;
+  // Text on a filled button: white or dark ink, whichever reads better on that fill, so a light
+  // accent (Black's grey, aurora's teal, a bright error red) keeps its label at 4.5:1 or more
+  const onFill = (fill: string) => readableOn(fill, colors.themeColor90, colors.themeColor99);
 
   return createTheme({
     truetime: { name, palette: colors, colors: semanticColors(colors) },
@@ -356,13 +360,15 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
           containedError: {
             backgroundColor: colors.error,
             borderColor: colors.error,
+            color: onFill(colors.error),
             '&:hover': {
               backgroundColor: '#E53935',
+              color: onFill('#E53935'),
             },
             '&.Mui-disabled': {
               opacity: disabledOpacity,
               cursor: 'not-allowed',
-              color: colors.themeColor99,
+              color: onFill(colors.error),
               boxShadow: 'none',
               borderColor: colors.error,
               backgroundColor: colors.error,
@@ -398,15 +404,17 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
           },
           containedPrimary: {
             backgroundColor: colors.primaryColor,
+            color: onFill(colors.primaryColor),
             boxShadow: 'none',
             borderColor: colors.primaryColor,
             '&:hover': {
               backgroundColor: colors.hoverColor,
+              color: onFill(colors.hoverColor),
             },
             '&.Mui-disabled': {
               opacity: disabledOpacity,
               cursor: 'not-allowed',
-              color: colors.themeColor99,
+              color: onFill(colors.primaryColor),
               boxShadow: 'none',
               borderColor: colors.primaryColor,
               backgroundColor: colors.primaryColor,
@@ -415,15 +423,17 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
           },
           containedSecondary: {
             backgroundColor: colors.secondaryColor,
+            color: onFill(colors.secondaryColor),
             boxShadow: 'none',
             borderColor: colors.secondaryColor,
             '&:hover': {
               backgroundColor: colors.hoverColor,
+              color: onFill(colors.hoverColor),
             },
             '&.Mui-disabled': {
               opacity: disabledOpacity,
               cursor: 'not-allowed',
-              color: colors.themeColor99,
+              color: onFill(colors.secondaryColor),
               boxShadow: 'none',
               borderColor: colors.secondaryColor,
               backgroundColor: colors.secondaryColor,
@@ -486,6 +496,7 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
     palette: {
       primary: {
         main: colors.primaryColor,
+        contrastText: readableOn(colors.primaryColor, colors.themeColor90, colors.themeColor99),
         dark: '#7A7A7A',
         light: '#9A9A9A',
       },
@@ -496,6 +507,7 @@ function buildTheme(name: ThemeName, typeface: Typeface): Theme {
       },
       error: {
         main: colors.error,
+        contrastText: readableOn(colors.error, colors.themeColor90, colors.themeColor99),
         dark: '#E53935',
         light: '#EF5350',
       },
