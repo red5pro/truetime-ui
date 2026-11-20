@@ -69,6 +69,15 @@ export {
   type UiTextProviderProps,
 } from './text/UiText.js';
 
+// Hover intent for quick choices attached to a control (pickers, layout selector, "more" menus)
+export {
+  HOVER_CLOSE_DELAY_MS,
+  HOVER_OPEN_DELAY_MS,
+  useHoverIntent,
+  type HoverIntent,
+  type UseHoverIntentOptions,
+} from './hooks/useHoverIntent.js';
+
 // Style helpers for app-level elements that should match the components
 export { focusRingStyle, themeColors, visuallyHidden } from './components/styleUtils.js';
 

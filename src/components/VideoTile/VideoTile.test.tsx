@@ -10,10 +10,35 @@ describe('VideoTile', () => {
     expect(container.querySelector('video')).not.toBeVisible();
   });
 
+  it('shows a person icon and no name label when the name is empty', () => {
+    const { container } = renderWithTheme(<VideoTile stream={null} name="  " />);
+    expect(container.querySelector('[data-avatar-icon]')).toBeInTheDocument();
+    expect(container.querySelector('[data-tile-name]')).toBeNull();
+  });
+
   it('shows a custom avatar instead of initials', () => {
     renderWithTheme(<VideoTile stream={null} name="Not connected" avatar={<span>?</span>} />);
     expect(screen.getByText('?')).toBeInTheDocument();
     expect(screen.queryByText('NC')).not.toBeInTheDocument();
+  });
+
+  it('renders a media element the caller manages, kept mounted while the camera is off', () => {
+    const { container, rerender } = renderWithTheme(
+      <VideoTile name="Ada" media={<video data-testid="sdk-video" />} />,
+    );
+    // Only the caller's element: no second <video> of the tile's own
+    expect(container.querySelectorAll('video')).toHaveLength(1);
+    expect(screen.getByTestId('sdk-video')).toBeVisible();
+    expect(screen.queryByText('AD')).toBeNull();
+
+    rerender(
+      <TrueTimeThemeProvider>
+        <VideoTile name="Ada" media={<video data-testid="sdk-video" />} videoEnabled={false} />
+      </TrueTimeThemeProvider>,
+    );
+    expect(screen.getByTestId('sdk-video')).toBeInTheDocument();
+    expect(screen.getByTestId('sdk-video')).not.toBeVisible();
+    expect(screen.getByText('AD')).toBeInTheDocument();
   });
 
   it('attaches the stream muted and labels the tile', () => {

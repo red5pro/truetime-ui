@@ -6,9 +6,9 @@ import { broadcastColors } from './palettes.js';
 
 /** `#RGB` or `#RRGGBB` as 0-255 channels; null for anything else. */
 function rgb(hex: string): [number, number, number] | null {
-  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex?.trim());
   if (!m) return null;
-  const h = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
+  const h = m[1]?.length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)) as [number, number, number];
 }
 

@@ -1,13 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type PointerEvent,
-  type ReactNode,
-} from 'react';
+import { useCallback, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -29,6 +20,7 @@ import {
   typography,
 } from '../../tokens/tokens.js';
 import { transition } from '../../motion/motion.js';
+import { useHoverIntent } from '../../hooks/useHoverIntent.js';
 import { focusRingStyle, themeColors } from '../styleUtils.js';
 
 export interface DeviceOption {
@@ -67,9 +59,6 @@ export interface DeviceMenuButtonProps {
   sx?: SxProps<Theme>;
 }
 
-const OPEN_DELAY_MS = 120;
-const CLOSE_DELAY_MS = 250;
-
 /**
  * Outlined pill that shows the selected device and opens a list of devices to choose from. With
  * `openOnHover` the list opens when the mouse rests on it, so switching devices takes one click.
@@ -102,70 +91,33 @@ export function DeviceMenuButton({
     anchorRef.current = element;
     setAnchorEl(element);
   }, []);
-  const [open, setOpen] = useState(false);
-  /** Opened by click or keyboard: stays open when the mouse leaves and takes focus. */
-  const [pinned, setPinned] = useState(false);
-  const openTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  const clearTimers = useCallback(() => {
-    clearTimeout(openTimer.current);
-    clearTimeout(closeTimer.current);
-  }, []);
-  useEffect(() => clearTimers, [clearTimers]);
-
-  const setOpenState = useCallback(
-    (next: boolean, nextPinned = false) => {
-      setOpen(next);
-      setPinned(next && nextPinned);
-      onOpenChange?.(next);
-    },
-    [onOpenChange],
-  );
+  const canOpen = !disabled && options?.length > 0;
+  const {
+    open,
+    pinned,
+    triggerProps,
+    panelProps,
+    toggle,
+    openPinned,
+    close: closePanel,
+  } = useHoverIntent({ enabled: openOnHover && canOpen, onOpenChange });
 
   const close = useCallback(
     (returnFocus = false) => {
-      clearTimers();
-      setOpenState(false);
+      closePanel();
       if (returnFocus) anchorRef.current?.focus();
     },
-    [clearTimers, setOpenState],
+    [closePanel],
   );
 
-  const canOpen = !disabled && options.length > 0;
-
-  const scheduleOpen = (event: PointerEvent) => {
-    if (!openOnHover || !canOpen || event.pointerType !== 'mouse') return;
-    clearTimeout(closeTimer.current);
-    if (open) return;
-    openTimer.current = setTimeout(() => setOpenState(true), OPEN_DELAY_MS);
-  };
-
-  const scheduleClose = (event: PointerEvent) => {
-    if (event.pointerType !== 'mouse') return;
-    clearTimeout(openTimer.current);
-    if (!open || pinned) return;
-    closeTimer.current = setTimeout(() => setOpenState(false), CLOSE_DELAY_MS);
-  };
-
   const handleClick = () => {
-    clearTimers();
-    if (!canOpen) return;
-    if (open && !pinned) {
-      // Opened by hover: the click keeps it open
-      setPinned(true);
-    } else if (open) {
-      close();
-    } else {
-      setOpenState(true, true);
-    }
+    if (canOpen) toggle();
   };
 
   const handleButtonKeyDown = (event: KeyboardEvent) => {
     if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && canOpen) {
       event.preventDefault();
-      clearTimers();
-      setOpenState(true, true);
+      openPinned();
     }
   };
 
@@ -200,8 +152,7 @@ export function DeviceMenuButton({
         title={shownLabel || undefined}
         onClick={handleClick}
         onKeyDown={handleButtonKeyDown}
-        onPointerEnter={scheduleOpen}
-        onPointerLeave={scheduleClose}
+        {...triggerProps}
         sx={[
           (theme) => {
             const colors = themeColors(theme);
@@ -271,10 +222,7 @@ export function DeviceMenuButton({
             style={{ transformOrigin: placement === 'top' ? 'bottom left' : 'top left' }}
           >
             <Paper
-              onPointerEnter={(event) => {
-                if (event.pointerType === 'mouse') clearTimeout(closeTimer.current);
-              }}
-              onPointerLeave={scheduleClose}
+              {...panelProps}
               sx={(theme) => {
                 const colors = themeColors(theme);
                 return {

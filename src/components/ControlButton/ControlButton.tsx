@@ -1,7 +1,8 @@
-import { styled, Theme } from '@mui/material/styles';
+import { darken, styled, Theme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { shadows } from '../../tokens/tokens.js';
 import { pressFeedback, transition } from '../../motion/motion.js';
+import { themeColors } from '../styleUtils.js';
 
 export interface ControlButtonProps {
   glass?: boolean;
@@ -24,23 +25,16 @@ export const ControlButton = styled(Button, {
   const paletteColor = theme.palette[color]?.main || theme.palette.primary.main;
   const contrastColor = theme.palette.getContrastText(paletteColor);
 
-  // Get hover colors from theme
+  // Hover colours from the active palette, so every company theme gets its own
+  const colors = themeColors(theme);
   const getHoverColor = (): string => {
     switch (color) {
       case 'primary':
-        return '#9A9A9A'; // Lighter gray for primary hover
-      case 'error':
-        return '#E53935'; // Darker red from theme
+        return colors.hover;
       case 'secondary':
-        return theme.palette.themeColor?.[50] || '#3A3A3A'; // Hover gray
-      case 'success':
-        return '#388E3C'; // Darker green
-      case 'warning':
-        return '#F57C00'; // Darker orange
-      case 'info':
-        return '#1976D2'; // Darker blue for info
+        return colors.border;
       default:
-        return theme.palette.action?.hover || '#3A3A3A';
+        return darken(paletteColor, 0.12);
     }
   };
 
@@ -81,12 +75,12 @@ export const ControlButton = styled(Button, {
 
     // Disabled state
     '&.Mui-disabled': {
-      backgroundColor: theme.palette.themeColor?.[50] || '#4A4A4A',
-      color: theme.palette.themeColor?.[30] || '#8E8E8E',
+      backgroundColor: colors.border,
+      color: colors.disabledText,
       opacity: 0.6,
       '&:hover': {
         transform: 'none',
-        backgroundColor: theme.palette.themeColor?.[50] || '#4A4A4A',
+        backgroundColor: colors.border,
       },
     },
 

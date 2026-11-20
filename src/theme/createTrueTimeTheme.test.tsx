@@ -3,6 +3,7 @@ import { Heading, Text } from '../components/Typography/Typography.js';
 import { renderWithTheme } from '../test/render.js';
 import { createTrueTimeTheme } from './createTrueTimeTheme.js';
 import { auroraPalette, bluePalette, blackPalette, palettes } from '../tokens/palettes.js';
+import { contrastRatio } from '../tokens/contrast.js';
 
 describe('createTrueTimeTheme', () => {
   it('builds the named palette', () => {
@@ -66,5 +67,30 @@ describe('createTrueTimeTheme', () => {
     );
     expect(getComputedStyle(screen.getByText('Sign in')).fontFamily).toContain('ClashDisplay');
     expect(getComputedStyle(screen.getByText('Body')).fontFamily).toContain('Inter');
+  });
+
+  it('keeps filled button labels readable (4.5:1) in every palette', () => {
+    for (const name of Object.keys(palettes)) {
+      const button = createTrueTimeTheme(name).components?.MuiButton?.styleOverrides as Record<
+        string,
+        {
+          backgroundColor: string;
+          color: string;
+          '&:hover': { backgroundColor: string; color: string };
+        }
+      >;
+      for (const variant of ['containedPrimary', 'containedSecondary', 'containedError']) {
+        const style = button[variant];
+        expect(
+          contrastRatio(style.color, style.backgroundColor),
+          `${name} ${variant}`,
+        ).toBeGreaterThanOrEqual(4.5);
+        const hover = style['&:hover'];
+        expect(
+          contrastRatio(hover.color, hover.backgroundColor),
+          `${name} ${variant} hover`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   });
 });

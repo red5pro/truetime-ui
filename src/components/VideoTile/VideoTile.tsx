@@ -1,15 +1,22 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
-import type { SxProps, Theme } from '@mui/material/styles';
-import { MicOff } from '@mui/icons-material';
+import { alpha, type SxProps, type Theme } from '@mui/material/styles';
+import { MicOff, Person } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
+import { broadcastColors } from '../../tokens/palettes.js';
 import { themeColors, visuallyHidden } from '../styleUtils.js';
 import { enterAnimation, transition } from '../../motion/motion.js';
 import { useUiText } from '../../text/UiText.js';
 
 export interface VideoTileProps {
-  /** Live media; null renders the avatar placeholder. */
-  stream: MediaStream | null;
+  /** Live media; null renders the avatar placeholder. Ignored when `media` is given. */
+  stream?: MediaStream | null;
+  /**
+   * Your own media element (usually a <video>) instead of `stream`, for SDKs that attach media to an
+   * element they manage. It fills the tile, follows `fit` and `mirrored`, and stays mounted (hidden)
+   * while `videoEnabled` is false, so its audio keeps playing.
+   */
+  media?: ReactNode;
   name: string;
   /** False when the participant turned their camera off. */
   videoEnabled?: boolean;
@@ -36,7 +43,10 @@ export interface VideoTileProps {
    * on the program or in the preview. Program wins when it's both.
    */
   tally?: 'program' | 'preview' | null;
-  /** Shown instead of the name's initials when there's no video (e.g. an icon for "offline"). */
+  /**
+   * Shown instead of the name's initials when there's no video (e.g. an icon for "offline").
+   * Without one, an empty name shows a person icon.
+   */
   avatar?: ReactNode;
   /**
    * Without video, the avatar (or initials) fills the whole tile instead of a circle in its
@@ -53,15 +63,16 @@ export interface VideoTileProps {
 }
 
 function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const parts = name?.trim().split(/\s+/).filter(Boolean);
   return (
-    parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : name.slice(0, 2)
-  ).toUpperCase();
+    parts?.length > 1 ? parts[0][0] + parts[parts?.length - 1][0] : name?.trim().slice(0, 2)
+  )?.toUpperCase();
 }
 
 /** One participant's video with name label, mic state and optional hover actions. */
 export function VideoTile({
-  stream,
+  stream = null,
+  media,
   name,
   videoEnabled = true,
   audioEnabled = true,
@@ -82,14 +93,15 @@ export function VideoTile({
 }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const text = useUiText();
-  const showVideo = Boolean(stream) && videoEnabled;
+  const ownMedia = media != null;
+  const showVideo = (ownMedia || Boolean(stream)) && videoEnabled;
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || ownMedia) return;
     video.srcObject = showVideo ? stream : null;
     if (showVideo) video.play?.()?.catch(() => {});
-  }, [stream, showVideo]);
+  }, [stream, showVideo, ownMedia]);
 
   return (
     <Box
@@ -133,24 +145,46 @@ export function VideoTile({
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
-      <Box
-        component="video"
-        id={videoId}
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted={!playAudio}
-        sx={{
-          display: showVideo ? 'block' : 'none',
-          width: '100%',
-          height: '100%',
-          objectFit: fit,
-          transform: mirrored ? 'scaleX(-1)' : 'none',
-          backgroundColor: '#000',
-          // Camera turning on: the picture fades in over the avatar
-          ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
-        }}
-      />
+      {ownMedia ? (
+        <Box
+          data-tile-media
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            visibility: showVideo ? 'visible' : 'hidden',
+            backgroundColor: broadcastColors.monitor,
+            transform: mirrored ? 'scaleX(-1)' : 'none',
+            '& > video, & > canvas, & > img': {
+              display: 'block',
+              width: '100%',
+              height: '100%',
+              objectFit: fit,
+            },
+            ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
+          }}
+        >
+          {media}
+        </Box>
+      ) : (
+        <Box
+          component="video"
+          id={videoId}
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted={!playAudio}
+          sx={{
+            display: showVideo ? 'block' : 'none',
+            width: '100%',
+            height: '100%',
+            objectFit: fit,
+            transform: mirrored ? 'scaleX(-1)' : 'none',
+            backgroundColor: broadcastColors.monitor,
+            // Camera turning on: the picture fades in over the avatar
+            ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
+          }}
+        />
+      )}
 
       {!showVideo && (
         <Box
@@ -190,7 +224,7 @@ export function VideoTile({
                 lineHeight: 1,
               }}
             >
-              {avatar ?? initials(name)}
+              {avatar ?? (initials(name) || <Person data-avatar-icon sx={{ fontSize: '1.5em' }} />)}
             </Box>
           </Box>
         </Box>
@@ -226,8 +260,9 @@ export function VideoTile({
         </Box>
       )}
 
-      {showName && (
+      {showName && (name?.trim() || !audioEnabled) && (
         <Box
+          data-tile-name
           sx={(theme) => ({
             position: 'absolute',
             left: 8,
@@ -239,7 +274,7 @@ export function VideoTile({
             px: 1,
             py: 0.25,
             borderRadius: `${radii.control}px`,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: alpha(themeColors(theme).monitor, 0.6),
             color: themeColors(theme).text,
             fontSize: 13,
             lineHeight: '20px',
@@ -265,7 +300,7 @@ export function VideoTile({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backgroundColor: alpha(broadcastColors.monitor, 0.45),
           }}
         >
           {actions}
