@@ -1,8 +1,9 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
-import type { SxProps, Theme } from '@mui/material/styles';
+import { alpha, type SxProps, type Theme } from '@mui/material/styles';
 import { MicOff } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
+import { broadcastColors } from '../../tokens/palettes.js';
 import { themeColors, visuallyHidden } from '../styleUtils.js';
 import { enterAnimation, transition } from '../../motion/motion.js';
 import { useUiText } from '../../text/UiText.js';
@@ -148,7 +149,7 @@ export function VideoTile({
             position: 'absolute',
             inset: 0,
             visibility: showVideo ? 'visible' : 'hidden',
-            backgroundColor: '#000',
+            backgroundColor: broadcastColors.monitor,
             transform: mirrored ? 'scaleX(-1)' : 'none',
             '& > video, & > canvas, & > img': {
               display: 'block',
@@ -175,7 +176,7 @@ export function VideoTile({
             height: '100%',
             objectFit: fit,
             transform: mirrored ? 'scaleX(-1)' : 'none',
-            backgroundColor: '#000',
+            backgroundColor: broadcastColors.monitor,
             // Camera turning on: the picture fades in over the avatar
             ...(showVideo && enterAnimation({ variant: 'fade', duration: 'slow' })),
           }}
@@ -270,7 +271,7 @@ export function VideoTile({
             px: 1,
             py: 0.25,
             borderRadius: `${radii.control}px`,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: alpha(themeColors(theme).monitor, 0.6),
             color: themeColors(theme).text,
             fontSize: 13,
             lineHeight: '20px',
@@ -296,7 +297,7 @@ export function VideoTile({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backgroundColor: alpha(broadcastColors.monitor, 0.45),
           }}
         >
           {actions}

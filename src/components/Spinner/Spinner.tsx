@@ -46,7 +46,8 @@ const Circle = styled('span', { shouldForwardProp: forwardShape })<ShapeProps>(
     boxSizing: 'border-box',
     width: size,
     height: size,
-    border: `${thickness}px solid rgba(255, 255, 255, 0.2)`,
+    // The track is the spinner's own colour, faint, so it works on any surface
+    border: `${thickness}px solid color-mix(in srgb, ${spinnerColor} 20%, transparent)`,
     borderTop: `${thickness}px solid ${spinnerColor}`,
     borderRadius: '50%',
     animation: `${spin} 1s linear infinite`,
