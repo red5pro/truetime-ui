@@ -10,6 +10,12 @@ describe('VideoTile', () => {
     expect(container.querySelector('video')).not.toBeVisible();
   });
 
+  it('shows a person icon and no name label when the name is empty', () => {
+    const { container } = renderWithTheme(<VideoTile stream={null} name="  " />);
+    expect(container.querySelector('[data-avatar-icon]')).toBeInTheDocument();
+    expect(container.querySelector('[data-tile-name]')).toBeNull();
+  });
+
   it('shows a custom avatar instead of initials', () => {
     renderWithTheme(<VideoTile stream={null} name="Not connected" avatar={<span>?</span>} />);
     expect(screen.getByText('?')).toBeInTheDocument();

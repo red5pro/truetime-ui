@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import { alpha, type SxProps, type Theme } from '@mui/material/styles';
-import { MicOff } from '@mui/icons-material';
+import { MicOff, Person } from '@mui/icons-material';
 import { radii } from '../../tokens/tokens.js';
 import { broadcastColors } from '../../tokens/palettes.js';
 import { themeColors, visuallyHidden } from '../styleUtils.js';
@@ -43,7 +43,10 @@ export interface VideoTileProps {
    * on the program or in the preview. Program wins when it's both.
    */
   tally?: 'program' | 'preview' | null;
-  /** Shown instead of the name's initials when there's no video (e.g. an icon for "offline"). */
+  /**
+   * Shown instead of the name's initials when there's no video (e.g. an icon for "offline").
+   * Without one, an empty name shows a person icon.
+   */
   avatar?: ReactNode;
   /**
    * Without video, the avatar (or initials) fills the whole tile instead of a circle in its
@@ -62,7 +65,7 @@ export interface VideoTileProps {
 function initials(name: string) {
   const parts = name?.trim().split(/\s+/).filter(Boolean);
   return (
-    parts?.length > 1 ? parts[0][0] + parts[parts?.length - 1][0] : name?.slice(0, 2)
+    parts?.length > 1 ? parts[0][0] + parts[parts?.length - 1][0] : name?.trim().slice(0, 2)
   )?.toUpperCase();
 }
 
@@ -221,7 +224,7 @@ export function VideoTile({
                 lineHeight: 1,
               }}
             >
-              {avatar ?? initials(name)}
+              {avatar ?? (initials(name) || <Person data-avatar-icon sx={{ fontSize: '1.5em' }} />)}
             </Box>
           </Box>
         </Box>
@@ -257,7 +260,7 @@ export function VideoTile({
         </Box>
       )}
 
-      {showName && (
+      {showName && (name?.trim() || !audioEnabled) && (
         <Box
           data-tile-name
           sx={(theme) => ({
