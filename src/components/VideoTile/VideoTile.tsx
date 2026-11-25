@@ -116,10 +116,6 @@ export function VideoTile({
             overflow: 'hidden',
             borderRadius: `${radii.control}px`,
             backgroundColor: colors.surfaceRaised,
-            // Always drawn, so turning it on and off fades instead of snapping
-            outline: `2px solid ${highlighted ? colors.text : 'transparent'}`,
-            outlineOffset: -2,
-            transition: transition('outline-color'),
             ...(fill
               ? { width: '100%', height: '100%' }
               : { width: '100%', aspectRatio: '16 / 9' }),
@@ -129,14 +125,16 @@ export function VideoTile({
             },
             '&:hover [data-tile-actions], &:focus-within [data-tile-actions]': { opacity: 1 },
             '@media (hover: none)': { '& [data-tile-actions]': { opacity: 1 } },
-            // Drawn over the video, which would cover a border on the tile itself
-            // Always there (transparent without a tally) so the ring fades between states
+            // Drawn over the video, which would cover a border on the tile itself. Tally wins over
+            // the speaking highlight. Always there (transparent when off) so the ring fades.
             '&::after': {
               content: '""',
               position: 'absolute',
               inset: 0,
               borderRadius: 'inherit',
-              boxShadow: `inset 0 0 0 3px ${tally ? colors[tally] : 'transparent'}`,
+              boxShadow: `inset 0 0 0 3px ${
+                tally ? colors[tally] : highlighted ? colors.text : 'transparent'
+              }`,
               transition: transition('box-shadow'),
               pointerEvents: 'none',
             },
